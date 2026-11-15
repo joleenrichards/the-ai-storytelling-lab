@@ -3,7 +3,6 @@ import { Card, CopyBtn, Field, LabButton, Seg, ToolHead, input, label } from "./
 import { FORMATS, SHOT_PRESETS, productionSheet, type Shot, type ShotFormat } from "./shots";
 import type { UtmFormat } from "./utm";
 import { FramePreview } from "./FramePreview";
-import { WorkingCopy } from "./WorkingCopy";
 import { COLOR_GRADES, DEFAULT_COLOR_GRADE, colorGradeBrief, type ColorGrade } from "./color-grade";
 import { ColorGradePicker } from "./ColorGradePicker";
 
@@ -36,7 +35,6 @@ export function ShotTool({ hook, onHookChange, onNext, format, onFormatChange, s
   return (
     <div>
       <ToolHead no="02" stage="Production" title="Shot List" desc="Give the story a frame, a rhythm, and a little texture." />
-      <WorkingCopy copy={hook} onChange={onHookChange} />
       <div className="mb-4"><Seg options={FORMATS} value={fmt} onChange={setFmt} /></div>
       <div className="mb-4 border border-terracotta bg-card px-3 py-2 text-left font-mono text-xs leading-relaxed text-terracotta">{preset.spec}</div>
       <div className="grid gap-4 md:grid-cols-[1.3fr_1fr]">

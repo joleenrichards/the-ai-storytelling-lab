@@ -19,3 +19,6 @@
 - [x] Add click-only live hook generation with selected Gemini 3.1 Flash Lite, static samples, editorial guardrails, varied local fallback, and verify success/failure flows.
 - [x] Add private Cloud suggestions with length/rate guardrails and CSV-ready fields; verified submission and blocked visitor reads. Table-level Cloud CSV button remains unverified.
 - [x] Add bounded aspect previews and editable poll handoffs; verified desktop/mobile and zero-credit flows.
+
+- [x] Autosave validated active campaigns, reset all tools, and verify cold tab jumps.
+- [x] Add platform copy limits/bio badge and 5–500 character, 15-second suggestion guardrails.

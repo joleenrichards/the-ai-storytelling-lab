@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { WorkingCopy } from "./WorkingCopy";
 import { PostProof } from "./PostProof";
 import type { ColorGrade } from "./color-grade";
 import type { AspectRatio } from "./draft";
@@ -14,7 +13,6 @@ export function UTMTool({ campaign, onCampaignChange, tracking, onTrackingChange
   return (
     <div>
       <ToolHead no="03" stage="Execution" title="UTM Builder" desc="A clean trail from your story to its impact." />
-      <WorkingCopy copy={activeCopy} onChange={onCopyChange} />
       <Card className="grid gap-5 md:grid-cols-2">
         <Field name="Destination URL"><input className={`${input} font-mono text-sm`} value={url} onChange={(e) => setUrl(e.target.value)} /></Field>
         <Field name="Campaign slug"><input className={input} value={campaign} onChange={(e) => onCampaignChange(e.target.value)} /></Field>

@@ -29,7 +29,7 @@ use the editor.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
 - Lab tools live in src/components/lab/, one file per tool; pure logic (utm, hooks, src/lib/abtest) kept in plain .ts files so it can be unit-tested.
-- Keep all workflow tools mounted within accessible hidden tab panels and hold handoff values in the index workspace; this preserves session edits without browser storage or a server.
+- Keep all workflow tools mounted within accessible hidden tab panels; validate and autosave shared campaign state after hydration, and remount tools on an explicit new-campaign reset so local edits cannot leak between campaigns.
 - Keep shot presets and production-sheet serialization in plain TypeScript; retain separate in-session checklists per format and nullable custom technical notes so switching formats updates defaults without overwriting edits.
 - Define channel formats, compatibility fallback, and shot tracking mappings in the pure UTM module; hold platform and format as one workspace selection so channel switches and production handoffs cannot generate mismatched URLs.
 - Keep A/B comparison defaults, handoffs, and verdict/guardrail logic in plain TypeScript; hold both selected formats in the workspace so tab changes preserve edits and handoffs retain exact UTM content.
@@ -37,7 +37,8 @@ use the editor.
 - Hook generation uses the AI Gateway inside a public server function with bounded input and validated JSON; static samples render without calls, and only explicit actions trigger inference with session history and a local fallback.
 - Keep the Field Manual in a focused presentation module using the shared accessible sheet primitive so opening guidance never unmounts tools or changes workspace state.
 - Pulse stores only aggregate totals and increments through a narrowly granted atomic RPC; browser-local flags discourage repeat votes without storing visitor identifiers, and totals refresh on focus and periodically.
-- Keep active copy, aspect ratio, custom creative note, destination, and platform selection in workspace state; derive the tracked URL there so working-copy edits, production exports, proof, and footer sharing stay synchronized without storage or extra AI calls.
+- Keep active copy, tone, format, grade, custom creative note, destination, and platform selection in validated workspace state; derive the tracked URL there so autosaved drafts, exports, proof, and sharing stay synchronized without extra AI calls.
+- Keep platform character counting in pure TypeScript with twitter-text for X's weighted count and fixed URL length; exclude Instagram's bio link from caption counts.
 - Keep Working Copy and Editorial Proof in focused presentation modules; pure aspect mappings and full-post serialization live in draft.ts so handoffs and clipboard output are testable.
 - Return topic illustrations in the existing hook inference response only; rebuild bounded XML through a strict primitive/attribute allowlist and render as isolated SVG images, with keyword-matched curated fallbacks for instant initial rendering and rejected art.
 - Keep copy checks and conservative mechanics fixes in pure TypeScript; no inference or storage is needed for real-time proofreading.

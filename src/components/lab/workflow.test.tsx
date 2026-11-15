@@ -1,10 +1,12 @@
 import { fireEvent, render, screen, within, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Route } from "@/routes/index";
 
 vi.mock("@/lib/hooks.functions", () => ({ generateHookAngles: vi.fn().mockResolvedValue({ angles: null }) }));
 vi.mock("@tanstack/react-start", () => ({ useServerFn: (fn: unknown) => fn }));
 vi.mock("./pulse", async (original) => ({ ...await original<typeof import("./pulse")>(), readPulse: vi.fn(() => new Promise(() => {})), addPulse: vi.fn() }));
+
+beforeEach(() => { localStorage.clear(); });
 
 describe("creative campaign handoffs", () => {
   it("shuffles the topic and audience and sends the fresh hook to production", async () => {

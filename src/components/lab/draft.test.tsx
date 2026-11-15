@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, within, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Route } from "@/routes/index";
 import { aspectForFormat, fullPost } from "./draft";
 import { generateHookAngles } from "@/lib/hooks.functions";
@@ -7,6 +7,8 @@ import { generateHookAngles } from "@/lib/hooks.functions";
 vi.mock("@/lib/hooks.functions", () => ({ generateHookAngles: vi.fn() }));
 vi.mock("@tanstack/react-start", () => ({ useServerFn: (fn: unknown) => fn }));
 vi.mock("./pulse", async (original) => ({ ...await original<typeof import("./pulse")>(), readPulse: vi.fn(() => new Promise(() => {})), addPulse: vi.fn() }));
+
+beforeEach(() => { localStorage.clear(); });
 
 describe("shared editorial draft", () => {
   it("hands off a native poll to LinkedIn and preserves edited options across tabs", () => {
@@ -46,18 +48,19 @@ describe("shared editorial draft", () => {
     fireEvent.click(screen.getByRole("button", { name: "Move to UTM Builder →" }));
     expect(within(screen.getByRole("article", { name: "LinkedIn post proof" })).getByText("The refined story.")).toBeInTheDocument();
     expect(within(screen.getByRole("article", { name: "LinkedIn post proof" })).getByText("Window-lit portrait with space for a title.")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Edit working copy" }));
     fireEvent.change(screen.getByRole("textbox", { name: "Active hook" }), { target: { value: "The final polished story." } });
     fireEvent.change(screen.getByRole("textbox", { name: "Destination URL" }), { target: { value: "https://example.com/story" } });
     fireEvent.click(screen.getByRole("button", { name: "instagram" }));
     const proof = screen.getByRole("article", { name: "Instagram post proof" });
-    const url = within(proof).getByText(/https:.*utm_source=/).textContent;
+    expect(within(proof).getByText("Link via Bio (UTM tracked)")).toBeInTheDocument();
+    expect(within(proof).queryByText(/https:.*utm_source=/)).not.toBeInTheDocument();
+    const url = within(screen.getByRole("tabpanel")).getByText(/https:.*utm_source=/).textContent;
     expect(url).toContain("utm_source=instagram");
     fireEvent.click(screen.getByRole("button", { name: "Copy Full Post + Link" }));
     await waitFor(() => expect(writeText).toHaveBeenCalledWith(`The final polished story.\n\n${url}`));
     fireEvent.click(screen.getByRole("button", { name: "Track in A/B Lab →" }));
     fireEvent.click(screen.getByRole("tab", { name: /Hook & Angle/ }));
-    expect(within(screen.getByRole("tabpanel")).getByText("The final polished story.")).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Active hook" })).toHaveValue("The final polished story.");
     fireEvent.click(screen.getByRole("tab", { name: /UTM Builder/ }));
     expect(screen.getByRole("textbox", { name: "Active hook" })).toHaveValue("The final polished story.");
     expect(screen.getByRole("textbox", { name: "Destination URL" })).toHaveValue("https://example.com/story");

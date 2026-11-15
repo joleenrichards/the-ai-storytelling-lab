@@ -1,15 +1,21 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Dices, Sparkles, Pencil, Check } from "lucide-react";
 import { generateHookAngles } from "@/lib/hooks.functions";
 import { TONES, SAMPLE_HOOKS, synthesize, buildPrompt, nextPromptScenario, type Tone } from "./hooks";
 import { Card, CopyBtn, Field, LabButton, Seg, ToolHead, input, label } from "./ui";
 
-export function HookTool({ topic, onTopicChange, onSendHook, onActiveHookChange, activeCopy, onIllustrationChange }: { topic: string; onTopicChange: (topic: string) => void; onSendHook: (hook: string) => void; onActiveHookChange?: (hook: string) => void; activeCopy?: string; onIllustrationChange?: (svg: string | null, topic: string) => void }) {
+export function HookTool({ topic, onTopicChange, onSendHook, onActiveHookChange, activeCopy, onIllustrationChange, selectedTone, onToneChange, audience, onAudienceChange }: { selectedTone?: Tone; onToneChange?: (tone: Tone) => void; audience?: string; onAudienceChange?: (audience: string) => void; topic: string; onTopicChange: (topic: string) => void; onSendHook: (hook: string) => void; onActiveHookChange?: (hook: string) => void; activeCopy?: string; onIllustrationChange?: (svg: string | null, topic: string) => void }) {
   const [editing, setEditing] = useState<string | null>(null);
   const [activeType, setActiveType] = useState<string>(SAMPLE_HOOKS[0]?.type ?? "Curiosity Gap");
-  const [aud, setAud] = useState("independent coffee roasters");
-  const [tone, setTone] = useState<Tone>("Editorial & Warm");
+  const [localAud, setLocalAud] = useState("independent coffee roasters");
+  const [localTone, setLocalTone] = useState<Tone>("Editorial & Warm");
+  const aud = audience ?? localAud;
+  const tone = selectedTone ?? localTone;
+  const setAud = (value: string) => { setLocalAud(value); onAudienceChange?.(value); };
+  const setTone = (value: Tone) => { setLocalTone(value); onToneChange?.(value); };
+  const mounted = useRef(true);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
   const [open, setOpen] = useState(false);
   const [scenarioIndex, setScenarioIndex] = useState(-1);
   const [hooks, setHooks] = useState(SAMPLE_HOOKS);
@@ -27,14 +33,16 @@ export function HookTool({ topic, onTopicChange, onSendHook, onActiveHookChange,
     let nextHooks;
     try {
       const result = await generateAngles({ data: { topic: nextTopic, audience: nextAudience, voice: tone, previousHooks: history.current } });
+      if (!mounted.current) return;
       onIllustrationChange?.(result.illustration ?? null, nextTopic);
       nextHooks = result.angles ?? synthesize(nextTopic, nextAudience, tone, variation);
     } catch {
       nextHooks = synthesize(nextTopic, nextAudience, tone, variation);
     } finally {
       busy.current = false;
-      setLoading(false);
+      if (mounted.current) setLoading(false);
     }
+    if (!mounted.current) return;
     setHooks(nextHooks);
     setEditing(null);
     setActiveType(nextHooks[0]?.type ?? "Curiosity Gap");

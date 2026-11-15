@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronDown, NotebookPen, Check } from "lucide-react";
 import { LabButton, Seg, input, label } from "./ui";
 import { logSuggestion, suggestionSchema, SUGGESTION_CATEGORIES, SUGGESTION_COOLDOWN_MS } from "./suggestions";
@@ -12,17 +12,29 @@ export function FeatureSuggestions({ activeTab }: { activeTab: string }) {
   const [error, setError] = useState("");
   const busy = useRef(false);
   const lastSent = useRef(0);
+  const [cooldownUntil, setCooldownUntil] = useState(0);
+  const [now, setNow] = useState(0);
+  useEffect(() => {
+    const sync = () => {
+      setNow(Date.now());
+      try { setCooldownUntil((Number(localStorage.getItem("storytelling-lab:last-suggestion")) || 0) + SUGGESTION_COOLDOWN_MS); } catch { /* Session guard remains. */ }
+    };
+    sync(); const timer = window.setInterval(sync, 250);
+    return () => window.clearInterval(timer);
+  }, []);
+  const cooling = now < cooldownUntil;
   async function submit() {
     if (busy.current) return;
     const result = suggestionSchema.safeParse({ category, active_tab: activeTab, suggestion });
     if (!result.success) { setError(result.error.issues[0]?.message ?? "Please check your note."); return; }
     let previous = lastSent.current;
     try { previous = Math.max(previous, Number(localStorage.getItem("storytelling-lab:last-suggestion")) || 0); } catch { /* Session guard remains. */ }
-    if (Date.now() - previous < SUGGESTION_COOLDOWN_MS) { setError("Give the field notes a minute before adding another."); return; }
+    if (Date.now() - previous < SUGGESTION_COOLDOWN_MS) { setError("Please wait 15 seconds before adding another note."); return; }
     busy.current = true; setPending(true); setError("");
     try {
       await logSuggestion(result.data);
       lastSent.current = Date.now();
+      setNow(lastSent.current); setCooldownUntil(lastSent.current + SUGGESTION_COOLDOWN_MS);
       try { localStorage.setItem("storytelling-lab:last-suggestion", String(lastSent.current)); } catch { /* No identifiers or note text stored. */ }
       setLogged(true); setSuggestion("");
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Please try again."); }
@@ -34,10 +46,11 @@ export function FeatureSuggestions({ activeTab }: { activeTab: string }) {
     </LabButton>
     <p className="mt-2 text-lg text-muted-foreground">Missing a tool or workflow step? Leave a note for the workbench.</p>
     <div id="field-request-form" hidden={!open} className="mt-4">
-      {logged ? <div role="status" className="flex flex-wrap items-center gap-3 text-primary"><Check size={18} /><p className="text-xl">Logged in the field notes — thank you.</p><LabButton className="normal-case" onClick={() => setLogged(false)}>Another note</LabButton></div> : <form onSubmit={(event) => { event.preventDefault(); void submit(); }}>
+      {logged ? <div role="status" className="flex flex-wrap items-center gap-3 text-primary"><Check size={18} /><p className="text-xl">Logged in the field notes — thank you.</p><LabButton disabled={cooling} className="normal-case" onClick={() => setLogged(false)}>Another note{cooling ? ` · ${Math.ceil((cooldownUntil - now) / 1000)}s` : ""}</LabButton></div> : <form onSubmit={(event) => { event.preventDefault(); void submit(); }}>
         <div className={`${label} mb-2`}>Category</div><Seg options={SUGGESTION_CATEGORIES} value={category} onChange={setCategory} />
         <label className="mt-4 block"><span className={label}>Your suggestion</span><textarea className={`${input} resize-y text-base`} rows={3} maxLength={500} value={suggestion} onChange={(event) => setSuggestion(event.target.value)} placeholder="A small idea for the next field experiment…" /></label>
-        <div className="mt-2 flex items-center justify-between gap-3"><span className={label}>{suggestion.length} / 500</span><LabButton primary type="submit" disabled={pending || !suggestion.trim()}>{pending ? "Logging…" : "Log Suggestion"}</LabButton></div>
+        <div className="mt-2 flex items-center justify-between gap-3"><span className={label}>{suggestion.length} / 500</span><LabButton primary type="submit" disabled={pending || cooling || suggestion.trim().length < 5}>{pending ? "Logging…" : "Log Suggestion"}</LabButton></div>
+        {cooling && !logged && <p role="status" className="mt-2 font-mono text-xs text-muted-foreground">Next note in {Math.ceil((cooldownUntil - now) / 1000)}s.</p>}
         {error && <p role="alert" className="mt-3 text-terracotta">{error}</p>}
       </form>}
     </div>

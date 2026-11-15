@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Compass, Aperture, Signpost, FlaskConical } from "lucide-react";
 import { BotanicalMark, ColophonMark } from "@/components/lab/FieldMarks";
 import { HookTool } from "@/components/lab/HookTool";
@@ -8,15 +8,15 @@ import { UTMTool } from "@/components/lab/UTMTool";
 import { ShotTool } from "@/components/lab/ShotTool";
 import { Badge, LabButton } from "@/components/lab/ui";
 import { slug, shotTracking, buildUtm, type TrackingSelection } from "@/components/lab/utm";
-import { ASPECT_FORMATS, aspectForFormat, type AspectRatio } from "@/components/lab/draft";
-import { SHOT_PRESETS, type ShotFormat } from "@/components/lab/shots";
+import { aspectForFormat } from "@/components/lab/draft";
+import { SHOT_PRESETS } from "@/components/lab/shots";
 import { FeatureSuggestions } from "@/components/lab/FeatureSuggestions";
-import { DEFAULT_POLL_OPTIONS } from "@/components/lab/PollPreview";
-import { SAMPLE_HOOKS } from "@/components/lab/hooks";
-import { SAMPLE_FORMATS, comparisonHandoff, type ComparisonFormats } from "@/components/lab/comparison";
+import { comparisonHandoff, type ComparisonFormats } from "@/components/lab/comparison";
 import { FieldManual } from "@/components/lab/FieldManual";
 import { FieldPulse } from "@/components/lab/FieldPulse";
-import { DEFAULT_COLOR_GRADE, type ColorGrade } from "@/components/lab/color-grade";
+import { CAMPAIGN_KEY, restoreCampaign, starterCampaign, type Campaign } from "@/components/lab/campaign";
+import { WorkingCopy } from "@/components/lab/WorkingCopy";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -39,23 +39,43 @@ const TABS = [
   { id: "ab", n: "04", name: "Field Log", stage: "Measurement", icon: FlaskConical },
 ];
 
-const SAMPLE_TOPIC = "Carousel posts get 3.1x more saves than single images";
-
 function Index() {
   const [tab, setTab] = useState("hooks");
-  const [topic, setTopic] = useState(SAMPLE_TOPIC);
-  const [activeCopy, setActiveCopy] = useState(SAMPLE_HOOKS[0]?.text ?? "");
-  const [selectedAspectRatio, setSelectedAspectRatio] = useState<AspectRatio>("9:16");
-  const [selectedShotFormat, setSelectedShotFormat] = useState<ShotFormat>(ASPECT_FORMATS["9:16"]);
-  const [pollOptions, setPollOptions] = useState(DEFAULT_POLL_OPTIONS);
-  const [selectedColorGrade, setSelectedColorGrade] = useState<ColorGrade>(DEFAULT_COLOR_GRADE);
-  const [customShotNote, setCustomShotNote] = useState<string | null>(null);
-  const [destinationUrl, setDestinationUrl] = useState("https://fieldnotes.studio/spring-blend");
-  const [topicArt, setTopicArt] = useState<{ topic: string; svg: string | null }>({ topic: SAMPLE_TOPIC, svg: null });
+  const [workspace, setWorkspace] = useState(starterCampaign);
+  const [ready, setReady] = useState(false);
+  const [resetKey, setResetKey] = useState(0);
+  const [topicArt, setTopicArt] = useState<{ topic: string; svg: string | null }>({ topic: "", svg: null });
+  const [saveFailed, setSaveFailed] = useState(false);
+  useEffect(() => {
+    try { setWorkspace(restoreCampaign(localStorage.getItem(CAMPAIGN_KEY))); }
+    catch { setSaveFailed(true); }
+    setReady(true);
+  }, []);
+  useEffect(() => {
+    if (!ready) return;
+    try { localStorage.setItem(CAMPAIGN_KEY, JSON.stringify(workspace)); setSaveFailed(false); }
+    catch { setSaveFailed(true); }
+  }, [workspace, ready]);
+  function update<K extends keyof Campaign>(key: K, value: Campaign[K]) { setWorkspace((current) => ({ ...current, [key]: value })); }
+  const { topic, activeCopy, selectedAspectRatio, selectedFormat: selectedShotFormat, pollOptions, selectedColorGrade, shotNote: customShotNote, campaignName: campaign } = workspace;
+  const destinationUrl = workspace.utmParams.destination;
+  const tracking: TrackingSelection = { platform: workspace.utmParams.platform, format: workspace.utmParams.format };
+  const comparisonFormats = workspace.comparisonFormats;
+  const setTopic = (value: string) => update("topic", value);
+  const setActiveCopy = (value: string) => update("activeCopy", value);
+  const setCampaign = (value: string) => update("campaignName", value);
+  const setTracking = (value: TrackingSelection) => setWorkspace((current) => ({ ...current, utmParams: { ...current.utmParams, ...value } }));
+  const setDestinationUrl = (destination: string) => setWorkspace((current) => ({ ...current, utmParams: { ...current.utmParams, destination } }));
+  const setComparisonFormats = (value: ComparisonFormats) => update("comparisonFormats", value);
+  const setPollOptions = (value: string[]) => update("pollOptions", value);
+  const setSelectedColorGrade = (value: Campaign["selectedColorGrade"]) => update("selectedColorGrade", value);
+  const setCustomShotNote = (value: string) => update("shotNote", value);
+  function newCampaign() {
+    setWorkspace(starterCampaign()); setTopicArt({ topic: "", svg: null });
+    setResetKey((value) => value + 1); setTab("hooks");
+    toast.success("New campaign — a fresh field guide is ready.");
+  }
   const illustration = topicArt.topic === topic ? topicArt.svg : null;
-  const [campaign, setCampaign] = useState("Spring Blend Launch 26");
-  const [tracking, setTracking] = useState<TrackingSelection>({ platform: "instagram", format: "reel" });
-  const [comparisonFormats, setComparisonFormats] = useState<ComparisonFormats>(SAMPLE_FORMATS);
   const shotFormat = selectedShotFormat;
   const shotNote = customShotNote ?? SHOT_PRESETS[shotFormat].light;
   const generatedUtmUrl = buildUtm(destinationUrl, tracking.platform, campaign, tracking.format);
@@ -83,9 +103,11 @@ function Index() {
           </LabButton>
         ))}
       </nav>
-      <div className="pt-8 md:pt-10">
-        <div {...panel("hooks")}><HookTool activeCopy={activeCopy} topic={topic} onIllustrationChange={(svg, forTopic) => setTopicArt({ topic: forTopic, svg })} onTopicChange={setTopic} onActiveHookChange={setActiveCopy} onSendHook={(text) => { setActiveCopy(text); setTab("shots"); }} /></div>
-        <div {...panel("shots")}><ShotTool selectedColorGrade={selectedColorGrade} onColorGradeChange={setSelectedColorGrade} topic={topic} illustration={illustration} hook={activeCopy} onHookChange={setActiveCopy} format={shotFormat} onFormatChange={(format) => { setSelectedShotFormat(format); setSelectedAspectRatio(aspectForFormat(format)); }} shotNote={shotNote} onShotNoteChange={setCustomShotNote} onNext={(nextFormat) => { setCampaign(slug(topic) || "untitled-campaign"); setTracking(shotTracking(nextFormat)); setTab("utm"); }} /></div>
+      <div className="pt-8 md:pt-10" key={resetKey}>
+        <WorkingCopy copy={activeCopy} onChange={setActiveCopy} onNewCampaign={newCampaign} />
+        {saveFailed && <p role="status" className="mb-4 font-mono text-xs text-terracotta">This browser cannot save your draft. Keep this tab open to preserve your work.</p>}
+        <div {...panel("hooks")}><HookTool selectedTone={workspace.selectedTone} onToneChange={(value) => update("selectedTone", value)} audience={workspace.audience} onAudienceChange={(value) => update("audience", value)} activeCopy={activeCopy} topic={topic} onIllustrationChange={(svg, forTopic) => setTopicArt({ topic: forTopic, svg })} onTopicChange={setTopic} onActiveHookChange={setActiveCopy} onSendHook={(text) => { setActiveCopy(text); setTab("shots"); }} /></div>
+        <div {...panel("shots")}><ShotTool selectedColorGrade={selectedColorGrade} onColorGradeChange={setSelectedColorGrade} topic={topic} illustration={illustration} hook={activeCopy} onHookChange={setActiveCopy} format={shotFormat} onFormatChange={(format) => { setWorkspace((current) => ({ ...current, selectedFormat: format, selectedAspectRatio: aspectForFormat(format) })); }} shotNote={shotNote} onShotNoteChange={setCustomShotNote} onNext={(nextFormat) => { setCampaign(slug(topic) || "untitled-campaign"); setTracking(shotTracking(nextFormat)); setTab("utm"); }} /></div>
         <div {...panel("utm")}><UTMTool pollSelected={shotFormat === "Poll"} pollOptions={pollOptions} onPollOptionsChange={setPollOptions} selectedColorGrade={selectedColorGrade} topic={topic} illustration={illustration} activeCopy={activeCopy} onCopyChange={setActiveCopy} aspectRatio={selectedAspectRatio} shotNote={shotNote} destinationUrl={destinationUrl} onDestinationChange={setDestinationUrl} generatedUtmUrl={generatedUtmUrl} campaign={campaign} onCampaignChange={setCampaign} tracking={tracking} onTrackingChange={setTracking} onNext={(format) => { setComparisonFormats(comparisonHandoff(format)); setTab("ab"); }} /></div>
         <div {...panel("ab")}><ABTool draft={{ copy: activeCopy, url: generatedUtmUrl, platform: tracking.platform, aspectRatio: selectedAspectRatio, shotNote, colorGrade: selectedColorGrade }} campaign={campaign} formats={comparisonFormats} onFormatsChange={setComparisonFormats} /></div>
       </div>

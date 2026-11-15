@@ -1,0 +1,37 @@
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, expect, it, vi } from "vitest";
+import { Route } from "@/routes/index";
+import { CAMPAIGN_KEY, restoreCampaign } from "./campaign";
+import { generateHookAngles } from "@/lib/hooks.functions";
+
+vi.mock("@/lib/hooks.functions", () => ({ generateHookAngles: vi.fn() }));
+vi.mock("@tanstack/react-start", () => ({ useServerFn: (fn: unknown) => fn }));
+vi.mock("./pulse", async (original) => ({ ...await original<typeof import("./pulse")>(), readPulse: vi.fn(() => new Promise(() => {})), addPulse: vi.fn() }));
+beforeEach(() => { localStorage.clear(); vi.clearAllMocks(); });
+it("restores an edited campaign after remount and resets all tools without AI", async () => {
+  const Index = Route.options.component;
+  if (typeof Index !== "function") throw new Error("Missing workspace");
+  const first = render(<Index />);
+  fireEvent.click(screen.getByRole("button", { name: "Edit working copy" }));
+  fireEvent.change(screen.getByRole("textbox", { name: "Active hook" }), { target: { value: "My saved story." } });
+  fireEvent.click(screen.getByRole("button", { name: "Contrarian", exact: true }));
+  fireEvent.click(screen.getByRole("tab", { name: /Shot List/ }));
+  fireEvent.click(screen.getByRole("button", { name: "Poll", exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: /Warm Editorial/ }));
+  fireEvent.click(screen.getByRole("tab", { name: /UTM Builder/ }));
+  fireEvent.change(screen.getByRole("textbox", { name: "Campaign slug" }), { target: { value: "retained-launch" } });
+  await waitFor(() => expect(restoreCampaign(localStorage.getItem(CAMPAIGN_KEY)).campaignName).toBe("retained-launch"));
+  first.unmount(); render(<Index />);
+  expect(screen.getByRole("button", { name: "Contrarian", exact: true })).toHaveAttribute("aria-pressed", "true");
+  fireEvent.click(screen.getByRole("tab", { name: /UTM Builder/ }));
+  expect(screen.getByRole("textbox", { name: "Campaign slug" })).toHaveValue("retained-launch");
+  expect(screen.getByRole("textbox", { name: "Poll option 1" })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "New Campaign" }));
+  expect(screen.getByRole("button", { name: "Editorial & Warm", exact: true })).toHaveAttribute("aria-pressed", "true");
+  fireEvent.click(screen.getByRole("tab", { name: /Shot List/ }));
+  expect(screen.getByRole("button", { name: "9:16 Reel", exact: true })).toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByRole("button", { name: /Botanical Daylight/ })).toHaveAttribute("aria-pressed", "true");
+  fireEvent.click(screen.getByRole("tab", { name: /UTM Builder/ }));
+  expect(screen.getByRole("textbox", { name: "Campaign slug" })).toHaveValue("field-guide-launch");
+  expect(generateHookAngles).not.toHaveBeenCalled();
+}, 15000);

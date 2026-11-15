@@ -1,4 +1,4 @@
-export const PLATFORMS = ["linkedin", "facebook", "instagram", "tiktok", "newsletter"] as const;
+export const PLATFORMS = ["linkedin", "facebook", "instagram", "tiktok", "newsletter", "x"] as const;
 export type UtmPlatform = (typeof PLATFORMS)[number];
 export const PLATFORM_FORMATS = {
   linkedin: ["document-carousel", "photo-series", "single-image", "video", "poll", "text-post"],
@@ -6,6 +6,7 @@ export const PLATFORM_FORMATS = {
   instagram: ["reel", "carousel", "single-image", "story"],
   tiktok: ["video", "photo-carousel", "story"],
   newsletter: ["header-cta", "inline-link", "digest-card", "footer-link"],
+  x: ["text-post", "single-image", "video", "poll", "link-post"],
 } as const;
 export type UtmFormat = (typeof PLATFORM_FORMATS)[UtmPlatform][number];
 export type TrackingSelection = { platform: UtmPlatform; format: UtmFormat };
