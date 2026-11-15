@@ -30,3 +30,4 @@ use the editor.
 <!-- LOVABLE:END -->
 - Lab tools live in src/components/lab/, one file per tool; pure logic (utm, hooks, src/lib/abtest) kept in plain .ts files so it can be unit-tested.
 - Keep all workflow tools mounted within accessible hidden tab panels and hold handoff values in the index workspace; this preserves session edits without browser storage or a server.
+- Keep shot presets and production-sheet serialization in plain TypeScript; retain separate in-session checklists per format and nullable custom technical notes so switching formats updates defaults without overwriting edits.

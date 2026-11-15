@@ -2,3 +2,4 @@
 - [x] Connect hook, shot plan, tracking campaign, and measurement while preserving session edits.
 - [x] Verify the full workflow and mobile layout; commit changes.
 - [ ] Activate portfolio link — waiting for Joleen's portfolio URL.
+- [x] Update Shot List mode presets, preserve custom edits, and verify current-mode production-sheet copying.

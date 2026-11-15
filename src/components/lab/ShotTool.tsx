@@ -1,31 +1,33 @@
 import { useState } from "react";
 import { Card, CopyBtn, Field, LabButton, Seg, ToolHead, input, label } from "./ui";
-
-const FORMATS = ["9:16 Reel", "4:5 Carousel"] as const;
-const DEFAULT_SHOTS = [
-  { name: "Hook Frame", note: "0–2s, macro pour, motion toward lens", done: true },
-  { name: "Detail B-Roll", note: "Beans, steam, hands on grinder", done: false },
-  { name: "Talking Head", note: "Roaster on why spring blend", done: false },
-  { name: "Closing CTA", note: "Bag on counter, text overlay", done: false },
-];
+import { FORMATS, SHOT_PRESETS, productionSheet, type Shot, type ShotFormat } from "./shots";
 const DEFAULT_PAL = [{ n: "Shadows", h: "#1F2B26" }, { n: "Mids", h: "#7A5A43" }, { n: "Highlights", h: "#F2E6D3" }, { n: "Accent", h: "#C85A32" }];
 
 export function ShotTool({ hook, onHookChange, onNext }: { hook: string; onHookChange: (hook: string) => void; onNext: (format: "reel" | "carousel") => void }) {
-  const [fmt, setFmt] = useState<(typeof FORMATS)[number]>("9:16 Reel");
-  const [shots, setShots] = useState(DEFAULT_SHOTS);
+  const [fmt, setFmt] = useState<ShotFormat>("9:16 Reel");
+  const [shotsByFormat, setShotsByFormat] = useState<Record<ShotFormat, Shot[]>>(() => ({
+    "9:16 Reel": SHOT_PRESETS["9:16 Reel"].shots.map((shot) => ({ ...shot })),
+    "4:5 Carousel": SHOT_PRESETS["4:5 Carousel"].shots.map((shot) => ({ ...shot })),
+  }));
+  const shots = shotsByFormat[fmt];
+  const setShots = (next: Shot[]) => setShotsByFormat((current) => ({ ...current, [fmt]: next }));
   const [newShot, setNewShot] = useState("");
-  const [light, setLight] = useState("Soft window key from camera left, bounce fill, 5600K. Avoid overheads.");
-  const [lens, setLens] = useState("35mm f/1.8 for talking head, 100mm macro for details, 1/50s at 24fps.");
+  const [customLight, setLight] = useState<string | null>(null);
+  const [customLens, setLens] = useState<string | null>(null);
+  const preset = SHOT_PRESETS[fmt];
+  const light = customLight ?? preset.light;
+  const lens = customLens ?? preset.lens;
   const [pal, setPal] = useState(DEFAULT_PAL);
 
-  const sheet = `PRODUCTION SHEET — ${fmt}\n\nACTIVE HOOK\n${hook}\n\nSHOT LIST\n${shots.map((s, i) => `${s.done ? "[x]" : "[ ]"} ${i + 1}. ${s.name} — ${s.note}`).join("\n")}\n\nLIGHTING\n${light}\n\nLENS\n${lens}\n\nGRADE PALETTE\n${pal.map((p) => `${p.n}: ${p.h}`).join("\n")}`;
-  const ai = `Create a ${shots.length}-frame storyboard for a ${fmt} social video/photo set. Aspect ratio ${fmt.split(" ")[0]}.\nNarrative hook: ${hook}\n${shots.map((s, i) => `Frame ${i + 1} (${s.name}): ${s.note}.`).join("\n")}\nLighting: ${light}\nLens: ${lens}\nColor grade palette: ${pal.map((p) => `${p.n.toLowerCase()} ${p.h}`).join(", ")}. Cinematic, natural texture, editorial mood.`;
+  const sheet = productionSheet(fmt, hook, shots, light, lens, pal);
+  const ai = `Create a ${shots.length}-frame storyboard for a ${fmt} social video/photo set. Aspect ratio ${fmt.split(" ")[0]}.\nFraming specs: ${preset.spec}\nNarrative hook: ${hook}\n${shots.map((s, i) => `Frame ${i + 1} (${s.name}): ${s.note}.`).join("\n")}\nLighting: ${light}\nLens: ${lens}\nColor grade palette: ${pal.map((p) => `${p.n.toLowerCase()} ${p.h}`).join(", ")}. Cinematic, natural texture, editorial mood.`;
 
   return (
     <div>
       <ToolHead no="02" stage="Production" title="Shot List" desc="Turn an abstract hook into a concrete visual plan with framing checklists, aspect ratios, and color grading notes before you pick up a camera." />
       <div className="mb-5 border-l-4 border-primary bg-sage p-4"><Field name="Active hook"><textarea rows={3} className={`${input} bg-transparent`} value={hook} onChange={(e) => onHookChange(e.target.value)} /></Field></div>
       <div className="mb-4"><Seg options={FORMATS} value={fmt} onChange={setFmt} /></div>
+      <div className="mb-4 border border-terracotta bg-card px-3 py-2 text-left font-mono text-xs leading-relaxed text-terracotta">{preset.spec}</div>
       <div className="grid gap-4 md:grid-cols-[1.3fr_1fr]">
         <Card>
           <div className={label}>Shot checklist</div>
@@ -35,7 +37,7 @@ export function ShotTool({ hook, onHookChange, onNext }: { hook: string; onHookC
                 <input type="checkbox" aria-label={`Complete ${s.name}`} className="mt-2 accent-primary" checked={s.done} onChange={() => setShots(shots.map((x, j) => j === i ? { ...x, done: !x.done } : x))} />
                 <div className="min-w-0 flex-1">
                   <div className={`text-xl ${s.done ? "text-muted-foreground line-through" : ""}`}>{s.name}</div>
-                  <input aria-label={`${s.name} framing notes`} className="w-full bg-transparent font-mono text-xs text-muted-foreground outline-none focus:text-foreground" value={s.note} onChange={(e) => setShots(shots.map((x, j) => j === i ? { ...x, note: e.target.value } : x))} />
+                  <textarea rows={2} aria-label={`${s.name} framing notes`} className="w-full resize-y bg-transparent font-mono text-xs text-muted-foreground outline-none focus:text-foreground" value={s.note} onChange={(e) => setShots(shots.map((x, j) => j === i ? { ...x, note: e.target.value } : x))} />
                 </div>
                 <LabButton aria-label={`Remove ${s.name}`} title={`Remove ${s.name}`} className="border-0 px-2 text-muted-foreground" onClick={() => setShots(shots.filter((_, j) => j !== i))}>✕</LabButton>
               </li>
