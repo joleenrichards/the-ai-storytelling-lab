@@ -2,8 +2,8 @@ import { useState, type ReactNode, type ButtonHTMLAttributes } from "react";
 import { BarChart2, Image, LayoutGrid, Clapperboard, Layers, Mail, Link, Type } from "lucide-react";
 
 function PillIcon({ value }: { value: string }) {
-  if (value === "x") return <svg width={14} height={14} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="shrink-0"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3L12 14.6 5.5 22H2.3l7.9-9L1 2h6.5l4.5 6.8L18.9 2Zm-1.1 18h1.7L6.6 4H4.8l13 16Z" /></svg>;
-  if (value === "bluesky") return <svg width={14} height={14} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="shrink-0"><path d="M5.3 3.8C8 5.8 10.8 9.9 12 12.1c1.2-2.2 4-6.3 6.7-8.3C20.6 2.4 24 1.3 24 4.8c0 .7-.4 5.9-.7 6.7-1 2.9-4.5 3.6-7.6 3 5.4.9 6.8 4 3.8 7.1-5.6 5.8-7.1-1.4-7.5-3.3-.4 1.9-1.9 9.1-7.5 3.3-3-3.1-1.6-6.2 3.8-7.1-3.1.6-6.6-.1-7.6-3C.4 10.7 0 5.5 0 4.8 0 1.3 3.4 2.4 5.3 3.8Z" /></svg>;
+  if (value === "x") return <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" aria-hidden="true" className="shrink-0"><path d="M6 5.5c4 3 8 9 12 13M18.5 5c-3 4-9 8-13 13M12 3.5l-.5 17M3.5 12.5l17-1" /><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none" /></svg>;
+  if (value === "bluesky") return <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0"><path d="M12 10C8 3 2 3 3 8c.5 3 4 5 8 5-5-1-7 2-5 5 2 3 5 0 6-4 1 4 4 7 6 4 2-3 0-6-5-5 4 0 7.5-2 8-5 1-5-5-5-9 2ZM12 10v8M11 9 9 6M13 9l2-3" /></svg>;
   const Icon = /poll|linkedin|facebook|Engagements|Poll Votes/.test(value) ? BarChart2
     : /photo-series|Series/.test(value) ? LayoutGrid
     : /carousel|Carousel/.test(value) ? Layers
