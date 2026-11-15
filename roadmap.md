@@ -24,3 +24,5 @@
 - [x] Add platform copy limits/bio badge and 5–500 character, 15-second suggestion guardrails.
 - [x] Add Bluesky/X microblog previews and exact counters; normalize production-format matching and verify cross-tab sync.
 - [x] Remove Newsletter from platform choices while preserving saved draft content.
+
+- [x] Expand subject classification and twelve sketches; verified zero-call manual swapping, refresh persistence, and mobile fit.

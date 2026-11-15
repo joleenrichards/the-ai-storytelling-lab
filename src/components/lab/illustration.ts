@@ -1,20 +1,10 @@
 import { XMLParser, XMLValidator, XMLBuilder } from "fast-xml-parser";
 
-const start = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none" stroke="#1F5E4D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">';
-export const FALLBACK_DRAWINGS = {
-  coffee: start + '<path d="M60 100h100v45c0 38-100 38-100 0zM160 110h12c32 0 32 40 0 40h-12M45 182h140M85 80c-20-20 20-25 0-45M120 80c-20-20 20-25 0-45"/><path stroke="#C85A32" d="M64 197h100M145 65c-12-15 12-20 0-35"/></svg>',
-  compass: start + '<circle cx="120" cy="120" r="75"/><circle cx="120" cy="120" r="62"/><path d="M120 32v20M120 188v20M32 120h20M188 120h20M90 150l20-40 40-20-20 40z"/><path stroke="#C85A32" d="M110 110l20 20M120 65v10M165 120h10"/></svg>',
-  notebook: start + '<path d="M120 72c-24-22-57-22-85-12v113c28-10 61-10 85 12 24-22 57-22 85-12V60c-28-10-61-10-85 12v113M50 83c19-4 37 0 54 7M50 105c19-4 37 0 54 7M50 127c19-4 37 0 54 7M136 90c17-7 35-11 54-7M136 112c17-7 35-11 54-7"/><path stroke="#C85A32" d="M156 58v67l12-9 12 6V54"/></svg>',
-  leaf: start + '<path d="M68 198C98 167 132 109 169 42M97 156C44 151 43 107 43 107c48-1 65 20 54 49zM126 116c-42-12-42-51-42-51 39 2 55 22 42 51zM129 114c50 14 70-27 70-27-40-19-59-3-70 27zM151 77c-29-28-11-55-11-55 31 17 37 37 11 55z"/><path stroke="#C85A32" d="M154 160c21-13 39-11 46-1-18 17-34 13-46 1M53 200h58"/></svg>',
-  lamp: start + '<path d="M58 197h122M119 197v-38l39-68-49-40M91 39l24-16 39 54-48 32zM158 91l-25 51M61 163h38v34H61zM99 170h9c13 0 13 17 0 17h-9"/><circle cx="158" cy="91" r="6"/><path stroke="#C85A32" d="M96 115l-18 28M120 119l-4 26M74 101l-23 12"/></svg>',
-} as const;
-export function fallbackDrawing(topic: string) {
-  if (/coffee|roast|cafe|café|bakery|bread|sourdough|hotel|restaurant|hospitality|food|blend/i.test(topic)) return FALLBACK_DRAWINGS.coffee;
-  if (/growth|save|stat|data|campaign|launch|conversion|metric|strategy|compass/i.test(topic)) return FALLBACK_DRAWINGS.compass;
-  if (/story|writ|book|copy|note|editor|newsletter/i.test(topic)) return FALLBACK_DRAWINGS.notebook;
-  if (/craft|handmade|leaf|plant|botanical|garden|sustain|ceramic/i.test(topic)) return FALLBACK_DRAWINGS.leaf;
-  return FALLBACK_DRAWINGS.lamp;
-}
+import { classifyVisual, VISUAL_DRAWINGS } from "./visuals";
+export { VISUAL_CATEGORIES, VISUAL_DRAWINGS, classifyVisual, nextVisualCategory, visualLabel, type VisualCategory } from "./visuals";
+// Legacy keys remain readable for existing consumers.
+export const FALLBACK_DRAWINGS = { coffee: VISUAL_DRAWINGS.coffee, compass: VISUAL_DRAWINGS.finance, notebook: VISUAL_DRAWINGS.books, leaf: VISUAL_DRAWINGS.nature, lamp: VISUAL_DRAWINGS.editorial } as const;
+export function fallbackDrawing(topic: string) { return VISUAL_DRAWINGS[classifyVisual(topic)]; }
 
 // Parse bounded XML, reject everything outside drawing primitives, and rebuild it.
 // No source markup is injected into the page; the rebuilt SVG is an isolated image.
