@@ -9,6 +9,20 @@ vi.mock("@tanstack/react-start", () => ({ useServerFn: (fn: unknown) => fn }));
 vi.mock("./pulse", async (original) => ({ ...await original<typeof import("./pulse")>(), readPulse: vi.fn(() => new Promise(() => {})), addPulse: vi.fn() }));
 
 describe("shared editorial draft", () => {
+  it("hands off a native poll to LinkedIn and preserves edited options across tabs", () => {
+    const Index = Route.options.component;
+    if (typeof Index !== "function") throw new Error("Missing workspace");
+    render(<Index />);
+    fireEvent.click(screen.getByRole("tab", { name: /Shot List/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Poll" }));
+    fireEvent.click(screen.getByRole("button", { name: "Move to UTM Builder →" }));
+    fireEvent.change(screen.getByRole("textbox", { name: "Poll option 1" }), { target: { value: "More visual planning" } });
+    fireEvent.click(screen.getByRole("tab", { name: /Shot List/ }));
+    fireEvent.click(screen.getByRole("tab", { name: /UTM Builder/ }));
+    expect(screen.getByRole("textbox", { name: "Poll option 1" })).toHaveValue("More visual planning");
+    expect(within(screen.getByRole("article", { name: "LinkedIn post proof" })).getByText(/https:.*utm_content=poll/)).toBeInTheDocument();
+    expect(generateHookAngles).not.toHaveBeenCalled();
+  });
   it.each([["9:16 Reel", "9:16"], ["4:5 Carousel", "4:5"], ["1:1 Feed / Series", "1:1"]] as const)("maps %s to its proof ratio", (format, ratio) => {
     expect(aspectForFormat(format)).toBe(ratio);
   });

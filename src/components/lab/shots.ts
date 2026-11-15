@@ -1,11 +1,22 @@
 import type { UtmFormat } from "./utm";
 import { colorGradeBrief, type ColorGrade } from "./color-grade";
 
-export const FORMATS = ["9:16 Reel", "4:5 Carousel", "1:1 Feed / Series"] as const;
+export const FORMATS = ["9:16 Reel", "4:5 Carousel", "1:1 Feed / Series", "Poll"] as const;
 export type ShotFormat = (typeof FORMATS)[number];
 export type Shot = { name: string; note: string; done: boolean };
 
 export const SHOT_PRESETS = {
+  "Poll": {
+    content: "poll",
+    spec: "Native social poll • 3 options • 3-day duration",
+    shots: [
+      { name: "Question / Hook", note: "One clear question, one decision", done: false },
+      { name: "Option Balance", note: "Keep answers distinct and comparable", done: false },
+      { name: "Feed Preview Check", note: "Check the question and options before publishing", done: false },
+    ],
+    light: "Native text poll; no image or lighting setup required.",
+    lens: "No camera required; prioritize concise, balanced options.",
+  },
   "9:16 Reel": {
     content: "reel",
     spec: "1080 × 1920px • Center 4:5 safe zone (clear of UI overlays)",

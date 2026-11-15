@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      feature_suggestions: {
+        Row: {
+          active_tab: string
+          category: string
+          created_at: string
+          id: string
+          suggestion: string
+        }
+        Insert: {
+          active_tab: string
+          category: string
+          created_at?: string
+          id?: string
+          suggestion: string
+        }
+        Update: {
+          active_tab?: string
+          category?: string
+          created_at?: string
+          id?: string
+          suggestion?: string
+        }
+        Relationships: []
+      }
       field_pulse_counts: {
         Row: {
           reaction: string

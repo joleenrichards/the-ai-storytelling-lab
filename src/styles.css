@@ -190,3 +190,5 @@
 .grade-primary { background-color: var(--grade-primary); }
 .grade-secondary { background-color: var(--grade-secondary); }
 .grade-crop { border-color: var(--grade-secondary); opacity: .6; }
+.grade-ink { color: var(--grade-primary); }
+.poll-option { border-color: var(--grade-primary); }

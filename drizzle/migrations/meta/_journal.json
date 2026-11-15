@@ -8,6 +8,20 @@
       "when": 1794766812719,
       "tag": "0000_create_field_pulse_counts",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794781311262,
+      "tag": "0001_create_feature_suggestions",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794781544628,
+      "tag": "0002_restrict_feature_suggestion_grants",
+      "breakpoints": true
     }
   ]
 }

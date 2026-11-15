@@ -6,7 +6,7 @@ import type { AspectRatio } from "./draft";
 import { PLATFORMS, PLATFORM_FORMATS, compatibleFormat, type TrackingSelection, type UtmFormat } from "./utm";
 import { Card, CopyBtn, Field, LabButton, Seg, ToolHead, input, label } from "./ui";
 
-export function UTMTool({ campaign, onCampaignChange, tracking, onTrackingChange, onNext, activeCopy, onCopyChange, aspectRatio, shotNote, destinationUrl: url, onDestinationChange: setUrl, generatedUtmUrl: out, topic, illustration = null, selectedColorGrade }: { campaign: string; onCampaignChange: (campaign: string) => void; tracking: TrackingSelection; onTrackingChange: (tracking: TrackingSelection) => void; onNext: (format: UtmFormat) => void; activeCopy: string; onCopyChange: (copy: string) => void; aspectRatio: AspectRatio; shotNote: string; destinationUrl: string; onDestinationChange: (url: string) => void; generatedUtmUrl: string; topic: string; illustration?: string | null; selectedColorGrade?: ColorGrade }) {
+export function UTMTool({ campaign, onCampaignChange, tracking, onTrackingChange, onNext, activeCopy, onCopyChange, aspectRatio, shotNote, destinationUrl: url, onDestinationChange: setUrl, generatedUtmUrl: out, topic, illustration = null, selectedColorGrade, pollSelected = false, pollOptions, onPollOptionsChange }: { campaign: string; onCampaignChange: (campaign: string) => void; tracking: TrackingSelection; onTrackingChange: (tracking: TrackingSelection) => void; onNext: (format: UtmFormat) => void; activeCopy: string; onCopyChange: (copy: string) => void; aspectRatio: AspectRatio; shotNote: string; destinationUrl: string; onDestinationChange: (url: string) => void; generatedUtmUrl: string; topic: string; illustration?: string | null; selectedColorGrade?: ColorGrade; pollSelected?: boolean; pollOptions?: string[]; onPollOptionsChange?: (options: string[]) => void }) {
   const { platform: plat } = tracking;
   const format = compatibleFormat(plat, tracking.format);
   const formats = PLATFORM_FORMATS[plat];
@@ -29,7 +29,7 @@ export function UTMTool({ campaign, onCampaignChange, tracking, onTrackingChange
           <LabButton disabled={!out} onClick={() => setLog([{ t: new Date().toLocaleTimeString(), u: out }, ...log])}>Add to log</LabButton>
         </div>
       </Card>
-      <PostProof onCopyChange={onCopyChange} selectedColorGrade={selectedColorGrade} copy={activeCopy} url={out} platform={plat} aspectRatio={aspectRatio} shotNote={shotNote} topic={topic} illustration={illustration} />
+      <PostProof pollSelected={pollSelected || format === "poll"} {...(pollOptions ? { pollOptions } : {})} {...(onPollOptionsChange ? { onPollOptionsChange } : {})} onCopyChange={onCopyChange} selectedColorGrade={selectedColorGrade} copy={activeCopy} url={out} platform={plat} aspectRatio={aspectRatio} shotNote={shotNote} topic={topic} illustration={illustration} />
       <section className="mt-4 border-y border-border py-4">
         <div className="flex justify-between"><div className={label}>Session log ({log.length})</div>{log.length > 0 && <LabButton className="border-0 py-0 text-terracotta" onClick={() => setLog([])}>clear</LabButton>}</div>
         {log.length === 0 ? <p className="mt-2 italic text-muted-foreground">No links logged yet.</p> : (

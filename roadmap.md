@@ -17,3 +17,5 @@
 - [x] Add A/B format selectors, format-aware verdicts and bias guardrails, and verify UTM-to-measurement handoffs.
 - [x] Add field-guide accents and icons, prompt shuffle, framing wireframes, and visual measurement readouts; verify interactions and layout.
 - [x] Add click-only live hook generation with selected Gemini 3.1 Flash Lite, static samples, editorial guardrails, varied local fallback, and verify success/failure flows.
+- [x] Add private Cloud suggestions with length/rate guardrails and CSV-ready fields; verified submission and blocked visitor reads. Table-level Cloud CSV button remains unverified.
+- [x] Add bounded aspect previews and editable poll handoffs; verified desktop/mobile and zero-credit flows.

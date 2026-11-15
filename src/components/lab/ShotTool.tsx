@@ -15,6 +15,7 @@ export function ShotTool({ hook, onHookChange, onNext, format, onFormatChange, s
     "9:16 Reel": SHOT_PRESETS["9:16 Reel"].shots.map((shot) => ({ ...shot })),
     "4:5 Carousel": SHOT_PRESETS["4:5 Carousel"].shots.map((shot) => ({ ...shot })),
     "1:1 Feed / Series": SHOT_PRESETS["1:1 Feed / Series"].shots.map((shot) => ({ ...shot })),
+    "Poll": SHOT_PRESETS.Poll.shots.map((shot) => ({ ...shot })),
   }));
   const shots = shotsByFormat[fmt];
   const setShots = (next: Shot[]) => setShotsByFormat((current) => ({ ...current, [fmt]: next }));

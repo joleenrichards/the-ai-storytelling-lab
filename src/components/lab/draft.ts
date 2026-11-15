@@ -8,7 +8,7 @@ export const ASPECT_FORMATS: Record<AspectRatio, ShotFormat> = {
 };
 export function aspectForFormat(format: ShotFormat): AspectRatio {
   if (format === "4:5 Carousel") return "4:5";
-  if (format === "1:1 Feed / Series") return "1:1";
+  if (format === "1:1 Feed / Series" || format === "Poll") return "1:1";
   return "9:16";
 }
 export function fullPost(copy: string, url: string) {

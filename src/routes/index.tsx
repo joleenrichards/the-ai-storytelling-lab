@@ -9,7 +9,9 @@ import { ShotTool } from "@/components/lab/ShotTool";
 import { Badge, LabButton } from "@/components/lab/ui";
 import { slug, shotTracking, buildUtm, type TrackingSelection } from "@/components/lab/utm";
 import { ASPECT_FORMATS, aspectForFormat, type AspectRatio } from "@/components/lab/draft";
-import { SHOT_PRESETS } from "@/components/lab/shots";
+import { SHOT_PRESETS, type ShotFormat } from "@/components/lab/shots";
+import { FeatureSuggestions } from "@/components/lab/FeatureSuggestions";
+import { DEFAULT_POLL_OPTIONS } from "@/components/lab/PollPreview";
 import { SAMPLE_HOOKS } from "@/components/lab/hooks";
 import { SAMPLE_FORMATS, comparisonHandoff, type ComparisonFormats } from "@/components/lab/comparison";
 import { FieldManual } from "@/components/lab/FieldManual";
@@ -44,6 +46,8 @@ function Index() {
   const [topic, setTopic] = useState(SAMPLE_TOPIC);
   const [activeCopy, setActiveCopy] = useState(SAMPLE_HOOKS[0]?.text ?? "");
   const [selectedAspectRatio, setSelectedAspectRatio] = useState<AspectRatio>("9:16");
+  const [selectedShotFormat, setSelectedShotFormat] = useState<ShotFormat>(ASPECT_FORMATS["9:16"]);
+  const [pollOptions, setPollOptions] = useState(DEFAULT_POLL_OPTIONS);
   const [selectedColorGrade, setSelectedColorGrade] = useState<ColorGrade>(DEFAULT_COLOR_GRADE);
   const [customShotNote, setCustomShotNote] = useState<string | null>(null);
   const [destinationUrl, setDestinationUrl] = useState("https://fieldnotes.studio/spring-blend");
@@ -52,7 +56,7 @@ function Index() {
   const [campaign, setCampaign] = useState("Spring Blend Launch 26");
   const [tracking, setTracking] = useState<TrackingSelection>({ platform: "instagram", format: "reel" });
   const [comparisonFormats, setComparisonFormats] = useState<ComparisonFormats>(SAMPLE_FORMATS);
-  const shotFormat = ASPECT_FORMATS[selectedAspectRatio];
+  const shotFormat = selectedShotFormat;
   const shotNote = customShotNote ?? SHOT_PRESETS[shotFormat].light;
   const generatedUtmUrl = buildUtm(destinationUrl, tracking.platform, campaign, tracking.format);
   const panel = (id: string) => ({ id: `panel-${id}`, role: "tabpanel", "aria-labelledby": `tab-${id}`, hidden: tab !== id, tabIndex: 0 });
@@ -81,11 +85,12 @@ function Index() {
       </nav>
       <div className="pt-8 md:pt-10">
         <div {...panel("hooks")}><HookTool activeCopy={activeCopy} topic={topic} onIllustrationChange={(svg, forTopic) => setTopicArt({ topic: forTopic, svg })} onTopicChange={setTopic} onActiveHookChange={setActiveCopy} onSendHook={(text) => { setActiveCopy(text); setTab("shots"); }} /></div>
-        <div {...panel("shots")}><ShotTool selectedColorGrade={selectedColorGrade} onColorGradeChange={setSelectedColorGrade} topic={topic} illustration={illustration} hook={activeCopy} onHookChange={setActiveCopy} format={shotFormat} onFormatChange={(format) => setSelectedAspectRatio(aspectForFormat(format))} shotNote={shotNote} onShotNoteChange={setCustomShotNote} onNext={(nextFormat) => { setCampaign(slug(topic) || "untitled-campaign"); setTracking(shotTracking(nextFormat)); setTab("utm"); }} /></div>
-        <div {...panel("utm")}><UTMTool selectedColorGrade={selectedColorGrade} topic={topic} illustration={illustration} activeCopy={activeCopy} onCopyChange={setActiveCopy} aspectRatio={selectedAspectRatio} shotNote={shotNote} destinationUrl={destinationUrl} onDestinationChange={setDestinationUrl} generatedUtmUrl={generatedUtmUrl} campaign={campaign} onCampaignChange={setCampaign} tracking={tracking} onTrackingChange={setTracking} onNext={(format) => { setComparisonFormats(comparisonHandoff(format)); setTab("ab"); }} /></div>
+        <div {...panel("shots")}><ShotTool selectedColorGrade={selectedColorGrade} onColorGradeChange={setSelectedColorGrade} topic={topic} illustration={illustration} hook={activeCopy} onHookChange={setActiveCopy} format={shotFormat} onFormatChange={(format) => { setSelectedShotFormat(format); setSelectedAspectRatio(aspectForFormat(format)); }} shotNote={shotNote} onShotNoteChange={setCustomShotNote} onNext={(nextFormat) => { setCampaign(slug(topic) || "untitled-campaign"); setTracking(shotTracking(nextFormat)); setTab("utm"); }} /></div>
+        <div {...panel("utm")}><UTMTool pollSelected={shotFormat === "Poll"} pollOptions={pollOptions} onPollOptionsChange={setPollOptions} selectedColorGrade={selectedColorGrade} topic={topic} illustration={illustration} activeCopy={activeCopy} onCopyChange={setActiveCopy} aspectRatio={selectedAspectRatio} shotNote={shotNote} destinationUrl={destinationUrl} onDestinationChange={setDestinationUrl} generatedUtmUrl={generatedUtmUrl} campaign={campaign} onCampaignChange={setCampaign} tracking={tracking} onTrackingChange={setTracking} onNext={(format) => { setComparisonFormats(comparisonHandoff(format)); setTab("ab"); }} /></div>
         <div {...panel("ab")}><ABTool draft={{ copy: activeCopy, url: generatedUtmUrl, platform: tracking.platform, aspectRatio: selectedAspectRatio, shotNote, colorGrade: selectedColorGrade }} campaign={campaign} formats={comparisonFormats} onFormatsChange={setComparisonFormats} /></div>
       </div>
       <FieldPulse hook={activeCopy} />
+      <FeatureSuggestions activeTab={tab} />
       <footer className="border-t border-border pt-6 text-left">
         <div className="flex items-center gap-3"><ColophonMark /><h2 className="text-2xl">About This Lab</h2></div>
         <p className="mt-2 max-w-3xl text-lg leading-relaxed text-muted-foreground">Designed and prompted by Joleen Richards, social media strategist and visual storyteller. An independent experiment in sharper campaigns—with a human editorial voice.</p>

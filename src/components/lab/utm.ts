@@ -16,7 +16,7 @@ export function compatibleFormat(platform: UtmPlatform, format: UtmFormat): UtmF
 }
 
 export function shotTracking(format: UtmFormat): TrackingSelection {
-  const platform = format === "photo-series" ? "linkedin" : "instagram";
+  const platform = format === "photo-series" || format === "poll" ? "linkedin" : "instagram";
   return { platform, format: compatibleFormat(platform, format) };
 }
 

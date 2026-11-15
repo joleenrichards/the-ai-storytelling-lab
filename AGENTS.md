@@ -43,3 +43,5 @@ use the editor.
 - Keep copy checks and conservative mechanics fixes in pure TypeScript; no inference or storage is needed for real-time proofreading.
 - Keep selected color grade in workspace state, palette values in a pure module, and preview roles in CSS tokens; recolor only validated SVG and serialize the grade into production exports.
 - Keep field-log snapshots, goal mappings, proportion validation, and sample guardrails in plain TypeScript; persist the selected metric with each log, default legacy logs to traffic, and isolate sample numbers from live results so previews never overwrite drafts.
+- Keep anonymous suggestions insert-only with database validation, duplicate/global rate guards and a browser cooldown; collect no visitor identifiers so private CSV review stays inbox-free.
+- Hold production format separately from aspect ratio and poll options in workspace state; render polls in a focused preview module so options survive tab and platform switches without AI.
