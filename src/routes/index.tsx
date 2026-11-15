@@ -43,8 +43,8 @@ function Index() {
     <main className="mx-auto max-w-6xl px-5 py-8 md:py-10">
       <header className="border-b-2 border-foreground pb-6 text-left">
         <Badge>PLANNING • PRODUCTION • EXECUTION</Badge>
-        <h1 className="mt-4 text-5xl font-medium md:text-6xl">The Storytelling Lab</h1>
-        <p className="mt-3 max-w-3xl text-left text-xl leading-relaxed text-muted-foreground">A small, experimental toolkit built around how good campaigns actually get made—moving from early narrative framing and visual shot planning to clean attribution and post-launch testing.</p>
+        <h1 className="mt-4 text-5xl font-medium md:text-6xl">The AI Storytelling Lab</h1>
+        <p className="mt-3 max-w-3xl text-left text-xl leading-relaxed text-muted-foreground">A small, experimental AI toolkit built around how good campaigns actually get made—moving from early narrative framing and visual shot planning to clean attribution and post-launch testing.</p>
       </header>
       <nav className="grid grid-cols-2 border-b border-border md:grid-cols-4" role="tablist" aria-label="Creative campaign workflow">
         {TABS.map((t, i) => (
@@ -70,7 +70,7 @@ function Index() {
       </div>
       <footer className="mt-12 border-t border-border pt-6 text-left">
         <h2 className="text-2xl">About This Lab</h2>
-        <p className="mt-2 max-w-3xl text-lg leading-relaxed text-muted-foreground">The Storytelling Lab is an independent sandbox built by Joleen—a social media strategist and visual storyteller exploring how lightweight AI workflows and practical data tools can make the creative process sharper without losing its human voice.</p>
+        <p className="mt-2 max-w-3xl text-lg leading-relaxed text-muted-foreground">The Storytelling Lab is an independent sandbox designed and prompted by Joleen Richards—a social media strategist and visual storyteller. It is an ongoing experiment in rapid prototyping: turning everyday campaign workflows into lightweight, interactive tools without losing a human editorial voice.</p>
         <span aria-disabled="true" title="Portfolio address not yet provided" className="mt-3 inline-block font-mono text-xs text-muted-foreground">View Portfolio →</span>
       </footer>
     </main>
