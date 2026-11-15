@@ -1,4 +1,4 @@
-const slug = (s: string) => s.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+export const slug = (s: string) => s.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 export function buildUtm(url: string, source: string, campaign: string, content: string) {
   let base = url.trim().toLowerCase();
   if (!base) return "";

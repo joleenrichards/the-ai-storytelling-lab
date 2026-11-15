@@ -81,14 +81,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Field Notes: AI Marketing Lab" },
+      { title: "The Storytelling Lab" },
       { name: "description", content: "Lightweight AI and data tools for social media strategy." },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Field Notes: AI Marketing Lab" },
+      { name: "author", content: "Joleen" },
+      { property: "og:title", content: "The Storytelling Lab" },
       { property: "og:description", content: "Lightweight AI and data tools for social media strategy." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },

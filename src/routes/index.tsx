@@ -4,15 +4,17 @@ import { HookTool } from "@/components/lab/HookTool";
 import { ABTool } from "@/components/lab/ABTool";
 import { UTMTool } from "@/components/lab/UTMTool";
 import { ShotTool } from "@/components/lab/ShotTool";
-import { Badge } from "@/components/lab/ui";
+import { Badge, LabButton } from "@/components/lab/ui";
+import { slug } from "@/components/lab/utm";
+import { synthesize } from "@/components/lab/hooks";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Field Notes // AI Marketing Lab" },
-      { name: "description", content: "Lightweight tools for testing hooks, statistical lift, campaign tracking, and visual pre-production." },
-      { property: "og:title", content: "Field Notes // AI Marketing Lab" },
-      { property: "og:description", content: "Lightweight tools for testing hooks, statistical lift, campaign tracking, and visual pre-production." },
+      { title: "The Storytelling Lab — Planning to Measurement" },
+      { name: "description", content: "Joleen's independent creative sandbox: connect narrative hooks, visual shot planning, campaign attribution, and A/B measurement." },
+      { property: "og:title", content: "The Storytelling Lab — Planning to Measurement" },
+      { property: "og:description", content: "Move from narrative framing and visual production to clean attribution and post-launch testing in Joleen's Storytelling Lab." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -21,32 +23,56 @@ export const Route = createFileRoute("/")({
 });
 
 const TABS = [
-  { id: "hooks", n: "01", name: "Hook Synthesizer", C: HookTool },
-  { id: "ab", n: "02", name: "A/B Significance", C: ABTool },
-  { id: "utm", n: "03", name: "UTM Builder", C: UTMTool },
-  { id: "shots", n: "04", name: "Shot-List Planner", C: ShotTool },
+  { id: "hooks", n: "01", name: "Hook & Angle", stage: "Planning" },
+  { id: "shots", n: "02", name: "Shot List", stage: "Production" },
+  { id: "utm", n: "03", name: "UTM Builder", stage: "Execution" },
+  { id: "ab", n: "04", name: "A/B Lab", stage: "Measurement" },
 ];
+
+const SAMPLE_TOPIC = "Carousel posts get 3.1x more saves than single images";
 
 function Index() {
   const [tab, setTab] = useState("hooks");
-  const Active = TABS.find((t) => t.id === tab)!.C;
+  const [topic, setTopic] = useState(SAMPLE_TOPIC);
+  const [hook, setHook] = useState(synthesize(SAMPLE_TOPIC, "independent coffee roasters", "Editorial & Warm")[0]?.text ?? "");
+  const [campaign, setCampaign] = useState("Spring Blend Launch 26");
+  const [format, setFormat] = useState<"reel" | "carousel" | "poll" | "story">("reel");
+  const [activeCampaign, setActiveCampaign] = useState("Spring Blend Launch 26");
+  const panel = (id: string) => ({ id: `panel-${id}`, role: "tabpanel", "aria-labelledby": `tab-${id}`, hidden: tab !== id, tabIndex: 0 });
   return (
-    <main className="mx-auto max-w-6xl px-5 py-10">
+    <main className="mx-auto max-w-6xl px-5 py-8 md:py-10">
       <header className="border-b-2 border-foreground pb-6 text-left">
-        <Badge>Experimental Sandbox • v1.0</Badge>
-        <h1 className="mt-4 text-5xl font-medium md:text-6xl">Field Notes: <span className="italic">AI Marketing Lab</span></h1>
-        <p className="mt-2 text-xl italic text-muted-foreground">Lightweight tools for testing hooks, statistical lift, campaign tracking, and visual pre-production.</p>
+        <Badge>PLANNING • PRODUCTION • EXECUTION</Badge>
+        <h1 className="mt-4 text-5xl font-medium md:text-6xl">The Storytelling Lab</h1>
+        <p className="mt-3 max-w-3xl text-left text-xl leading-relaxed text-muted-foreground">A small, experimental toolkit built around how good campaigns actually get made—moving from early narrative framing and visual shot planning to clean attribution and post-launch testing.</p>
       </header>
-      <nav className="grid grid-cols-2 border-b border-border md:grid-cols-4" role="tablist">
-        {TABS.map((t) => (
-          <button key={t.id} role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)}
-            className={`border-b-2 px-3 py-4 text-left transition-colors ${tab === t.id ? "border-terracotta" : "border-transparent text-muted-foreground hover:text-foreground"}`}>
-            <span className={`mr-2 font-mono text-xs ${tab === t.id ? "text-terracotta" : ""}`}>{t.n}</span><span className="text-lg">{t.name}</span>
-          </button>
+      <nav className="grid grid-cols-2 border-b border-border md:grid-cols-4" role="tablist" aria-label="Creative campaign workflow">
+        {TABS.map((t, i) => (
+          <LabButton key={t.id} id={`tab-${t.id}`} role="tab" aria-controls={`panel-${t.id}`} tabIndex={tab === t.id ? 0 : -1} aria-selected={tab === t.id} onClick={() => setTab(t.id)}
+            onKeyDown={(e) => {
+              const next = e.key === "ArrowRight" ? (i + 1) % TABS.length : e.key === "ArrowLeft" ? (i + TABS.length - 1) % TABS.length : e.key === "Home" ? 0 : e.key === "End" ? TABS.length - 1 : null;
+              if (next === null) return;
+              e.preventDefault();
+              const target = TABS[next];
+              if (target) { setTab(target.id); document.getElementById(`tab-${target.id}`)?.focus(); }
+            }}
+            className={`min-w-0 justify-between border-0 border-b-2 bg-transparent px-3 py-4 normal-case ${tab === t.id ? "border-terracotta bg-sage" : "border-transparent text-muted-foreground hover:text-foreground"}`}>
+            <span className="min-w-0 text-left"><span className="mb-1 block font-mono text-[10px] uppercase">{t.stage}</span><span className="mr-2 font-mono text-xs text-terracotta">{t.n}</span><span className="font-serif text-lg">{t.name}</span></span>
+            <span aria-hidden="true" className="text-terracotta">{i < 3 ? "→" : "↗"}</span>
+          </LabButton>
         ))}
       </nav>
-      <div className="pt-10"><Active /></div>
-      <footer className="mt-16 border-t border-border pt-4 font-mono text-xs text-muted-foreground">Field Notes // independent lab. All tools run in your browser.</footer>
+      <div className="pt-8 md:pt-10">
+        <div {...panel("hooks")}><HookTool topic={topic} onTopicChange={setTopic} onSendHook={(text) => { setHook(text); setTab("shots"); }} /></div>
+        <div {...panel("shots")}><ShotTool hook={hook} onHookChange={setHook} onNext={(nextFormat) => { setCampaign(slug(topic) || "untitled-campaign"); setFormat(nextFormat); setTab("utm"); }} /></div>
+        <div {...panel("utm")}><UTMTool campaign={campaign} onCampaignChange={setCampaign} format={format} onFormatChange={setFormat} onNext={() => { setActiveCampaign(campaign); setTab("ab"); }} /></div>
+        <div {...panel("ab")}><ABTool campaign={activeCampaign} /></div>
+      </div>
+      <footer className="mt-12 border-t border-border pt-6 text-left">
+        <h2 className="text-2xl">About This Lab</h2>
+        <p className="mt-2 max-w-3xl text-lg leading-relaxed text-muted-foreground">The Storytelling Lab is an independent sandbox built by Joleen—a social media strategist and visual storyteller exploring how lightweight AI workflows and practical data tools can make the creative process sharper without losing its human voice.</p>
+        <span aria-disabled="true" title="Portfolio address not yet provided" className="mt-3 inline-block font-mono text-xs text-muted-foreground">View Portfolio →</span>
+      </footer>
     </main>
   );
 }
