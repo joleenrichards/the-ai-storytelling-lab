@@ -1,6 +1,8 @@
-import { useState } from "react";
-import { Dices } from "lucide-react";
-import { TONES, synthesize, buildPrompt, nextPromptScenario, type Tone } from "./hooks";
+import { useRef, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { Dices, Sparkles } from "lucide-react";
+import { generateHookAngles } from "@/lib/hooks.functions";
+import { TONES, SAMPLE_HOOKS, synthesize, buildPrompt, nextPromptScenario, type Tone } from "./hooks";
 import { Card, CopyBtn, Field, LabButton, Seg, ToolHead, input, label } from "./ui";
 
 export function HookTool({ topic, onTopicChange, onSendHook }: { topic: string; onTopicChange: (topic: string) => void; onSendHook: (hook: string) => void }) {
@@ -8,23 +10,50 @@ export function HookTool({ topic, onTopicChange, onSendHook }: { topic: string; 
   const [tone, setTone] = useState<Tone>("Editorial & Warm");
   const [open, setOpen] = useState(false);
   const [scenarioIndex, setScenarioIndex] = useState(-1);
-  const hooks = synthesize(topic, aud, tone);
+  const [hooks, setHooks] = useState(SAMPLE_HOOKS);
+  const [loading, setLoading] = useState(false);
+  const busy = useRef(false);
+  const generation = useRef(0);
+  const history = useRef<string[]>([]);
+  const generateAngles = useServerFn(generateHookAngles);
+  async function generate(nextTopic = topic, nextAudience = aud) {
+    if (busy.current) return;
+    busy.current = true;
+    setLoading(true);
+    const variation = generation.current++;
+    let nextHooks;
+    try {
+      const result = await generateAngles({ data: { topic: nextTopic, audience: nextAudience, voice: tone, previousHooks: history.current } });
+      nextHooks = result.angles ?? synthesize(nextTopic, nextAudience, tone, variation);
+    } catch {
+      nextHooks = synthesize(nextTopic, nextAudience, tone, variation);
+    } finally {
+      busy.current = false;
+      setLoading(false);
+    }
+    setHooks(nextHooks);
+    history.current = [...history.current, ...nextHooks.map((h) => h.text)].slice(-9);
+  }
   const prompt = buildPrompt(topic, aud, tone);
   return (
     <div>
       <ToolHead no="01" stage="Planning" title="Hook & Angle" desc="One topic. Three ways into the story." />
       <Card className="grid gap-5 md:grid-cols-2">
-        <div><div className="mb-2 flex flex-wrap items-center justify-between gap-2"><span className={label}>Narrative seed</span><LabButton className="px-2 py-1 normal-case" onClick={() => { const next = nextPromptScenario(scenarioIndex); setScenarioIndex(next.index); onTopicChange(next.scenario.topic); setAud(next.scenario.audience); }}><Dices size={16} strokeWidth={1.5} aria-hidden="true" />Try a Prompt</LabButton></div><Field name="Core topic / stat"><textarea rows={2} className={input} value={topic} onChange={(e) => onTopicChange(e.target.value)} /></Field></div>
+        <div><div className="mb-2 flex flex-wrap items-center justify-between gap-2"><span className={label}>Narrative seed</span><LabButton disabled={loading} className="px-2 py-1 normal-case" onClick={() => { const next = nextPromptScenario(scenarioIndex); setScenarioIndex(next.index); onTopicChange(next.scenario.topic); setAud(next.scenario.audience); void generate(next.scenario.topic, next.scenario.audience); }}><Dices size={16} strokeWidth={1.5} aria-hidden="true" />Try a Prompt</LabButton></div><Field name="Core topic / stat"><textarea rows={2} className={input} value={topic} onChange={(e) => onTopicChange(e.target.value)} /></Field></div>
         <Field name="Audience"><input className={input} value={aud} onChange={(e) => setAud(e.target.value)} /></Field>
         <div className="md:col-span-2"><div className={`${label} mb-2`}>Strategic tone</div><Seg options={TONES} value={tone} onChange={setTone} /></div>
       </Card>
-      <div className="mt-6 grid gap-4 md:grid-cols-3">
+      <div className="mt-4 flex min-h-10 flex-wrap items-center gap-4">
+        <LabButton primary disabled={loading} onClick={() => void generate()}><Sparkles size={15} strokeWidth={1.5} aria-hidden="true" />Generate Angles</LabButton>
+        <span role="status" className="flex items-center gap-2 text-base italic text-primary">{loading && <><span aria-hidden="true" className="h-2 w-2 rounded-full bg-primary motion-safe:animate-pulse" />Synthesizing angles...</>}</span>
+      </div>
+      <div aria-busy={loading} className="mt-6 grid gap-4 md:grid-cols-3">
         {hooks.map((h) => (
           <Card key={h.type} className="flex flex-col text-left">
             <div className="flex items-center justify-between"><span className={label}>{h.type}</span><CopyBtn text={h.text}>Copy</CopyBtn></div>
             <p className="mt-3 flex-1 text-xl leading-snug">{h.text}</p>
             <p className="mt-4 border-t border-border pt-3 text-base italic text-muted-foreground">{h.note}</p>
-            <LabButton className="mt-4" onClick={() => onSendHook(h.text)}>Send Hook to Shot List →</LabButton>
+            <LabButton disabled={loading} className="mt-4" onClick={() => onSendHook(h.text)}>Send Hook to Shot List →</LabButton>
           </Card>
         ))}
       </div>

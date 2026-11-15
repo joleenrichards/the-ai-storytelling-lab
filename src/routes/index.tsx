@@ -8,7 +8,7 @@ import { UTMTool } from "@/components/lab/UTMTool";
 import { ShotTool } from "@/components/lab/ShotTool";
 import { Badge, LabButton } from "@/components/lab/ui";
 import { slug, shotTracking, type TrackingSelection } from "@/components/lab/utm";
-import { synthesize } from "@/components/lab/hooks";
+import { SAMPLE_HOOKS } from "@/components/lab/hooks";
 import { SAMPLE_FORMATS, comparisonHandoff, type ComparisonFormats } from "@/components/lab/comparison";
 
 export const Route = createFileRoute("/")({
@@ -37,7 +37,7 @@ const SAMPLE_TOPIC = "Carousel posts get 3.1x more saves than single images";
 function Index() {
   const [tab, setTab] = useState("hooks");
   const [topic, setTopic] = useState(SAMPLE_TOPIC);
-  const [hook, setHook] = useState(synthesize(SAMPLE_TOPIC, "independent coffee roasters", "Editorial & Warm")[0]?.text ?? "");
+  const [hook, setHook] = useState(SAMPLE_HOOKS[0]?.text ?? "");
   const [campaign, setCampaign] = useState("Spring Blend Launch 26");
   const [tracking, setTracking] = useState<TrackingSelection>({ platform: "instagram", format: "reel" });
   const [activeCampaign, setActiveCampaign] = useState("Spring Blend Launch 26");

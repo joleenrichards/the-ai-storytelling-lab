@@ -1,15 +1,19 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen, within, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { Route } from "@/routes/index";
 
+vi.mock("@/lib/hooks.functions", () => ({ generateHookAngles: vi.fn().mockResolvedValue({ angles: null }) }));
+vi.mock("@tanstack/react-start", () => ({ useServerFn: (fn: unknown) => fn }));
+
 describe("creative campaign handoffs", () => {
-  it("shuffles the topic and audience and sends the fresh hook to production", () => {
+  it("shuffles the topic and audience and sends the fresh hook to production", async () => {
     const Index = Route.options.component;
     if (typeof Index !== "function") throw new Error("Missing workspace");
     render(<Index />);
     fireEvent.click(screen.getByRole("button", { name: "Try a Prompt" }));
     expect(screen.getByRole("textbox", { name: "Core topic / stat" })).toHaveValue("A neighborhood bakery launching a sourdough subscription");
     expect(screen.getByRole("textbox", { name: "Audience" })).toHaveValue("local bread lovers");
+    await waitFor(() => expect(screen.getAllByRole("button", { name: "Send Hook to Shot List →" })[0]).toBeEnabled());
     const first = screen.getAllByRole("button", { name: "Send Hook to Shot List →" })[0];
     if (!first) throw new Error("Missing hook action");
     fireEvent.click(first);
