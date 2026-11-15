@@ -48,7 +48,7 @@ function Index() {
       <header className="border-b-2 border-foreground pb-6 text-left">
         <div className="flex flex-wrap items-center gap-4"><Badge>PLANNING • PRODUCTION • EXECUTION</Badge><BotanicalMark /></div>
         <h1 className="mt-4 text-5xl font-medium md:text-6xl">The AI Storytelling Lab</h1>
-        <p className="mt-3 max-w-3xl text-left text-xl leading-relaxed text-muted-foreground">An experimental AI field guide for stories worth sharing—from first spark to final signal.</p>
+        <p className="mt-3 max-w-3xl text-left text-xl leading-relaxed text-muted-foreground">An experimental AI toolkit built around how good campaigns actually get made—moving from early narrative framing and visual shot planning to clean attribution and post-launch testing.</p>
       </header>
       <nav className="grid grid-cols-2 border-b border-border md:grid-cols-4" role="tablist" aria-label="Creative campaign workflow">
         {TABS.map((t, i) => (
