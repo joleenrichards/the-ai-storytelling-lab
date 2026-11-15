@@ -7,3 +7,4 @@
 - [x] Add channel-specific tracking formats, automatic mediums, and compatible production handoffs; verify copying and platform switches.
 - [x] Add A/B format selectors, format-aware verdicts and bias guardrails, and verify UTM-to-measurement handoffs.
 - [x] Add field-guide accents and icons, prompt shuffle, framing wireframes, and visual measurement readouts; verify interactions and layout.
+- [ ] Add click-only live hook generation, static samples, editorial guardrails, varied local fallback, and verify success/failure flows — waiting for replacement model selection because the requested Gemini 2.5 Flash retired.
