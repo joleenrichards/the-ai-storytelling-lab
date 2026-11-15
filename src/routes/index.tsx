@@ -8,7 +8,7 @@ import { UTMTool } from "@/components/lab/UTMTool";
 import { ShotTool } from "@/components/lab/ShotTool";
 import { Badge, LabButton } from "@/components/lab/ui";
 import { slug, shotTracking, buildUtm, type TrackingSelection } from "@/components/lab/utm";
-import { aspectForFormat } from "@/components/lab/draft";
+import { aspectForFormat, productionFormatForTracking } from "@/components/lab/draft";
 import { SHOT_PRESETS } from "@/components/lab/shots";
 import { FeatureSuggestions } from "@/components/lab/FeatureSuggestions";
 import { comparisonHandoff, type ComparisonFormats } from "@/components/lab/comparison";
@@ -64,7 +64,10 @@ function Index() {
   const setTopic = (value: string) => update("topic", value);
   const setActiveCopy = (value: string) => update("activeCopy", value);
   const setCampaign = (value: string) => update("campaignName", value);
-  const setTracking = (value: TrackingSelection) => setWorkspace((current) => ({ ...current, utmParams: { ...current.utmParams, ...value } }));
+  const setTracking = (value: TrackingSelection) => setWorkspace((current) => {
+    const format = value.platform === current.utmParams.platform ? productionFormatForTracking(value.format) : current.selectedFormat;
+    return { ...current, selectedFormat: format, selectedAspectRatio: aspectForFormat(format), utmParams: { ...current.utmParams, ...value } };
+  });
   const setDestinationUrl = (destination: string) => setWorkspace((current) => ({ ...current, utmParams: { ...current.utmParams, destination } }));
   const setComparisonFormats = (value: ComparisonFormats) => update("comparisonFormats", value);
   const setPollOptions = (value: string[]) => update("pollOptions", value);
@@ -108,7 +111,7 @@ function Index() {
         {saveFailed && <p role="status" className="mb-4 font-mono text-xs text-terracotta">This browser cannot save your draft. Keep this tab open to preserve your work.</p>}
         <div {...panel("hooks")}><HookTool selectedTone={workspace.selectedTone} onToneChange={(value) => update("selectedTone", value)} audience={workspace.audience} onAudienceChange={(value) => update("audience", value)} activeCopy={activeCopy} topic={topic} onIllustrationChange={(svg, forTopic) => setTopicArt({ topic: forTopic, svg })} onTopicChange={setTopic} onActiveHookChange={setActiveCopy} onSendHook={(text) => { setActiveCopy(text); setTab("shots"); }} /></div>
         <div {...panel("shots")}><ShotTool selectedColorGrade={selectedColorGrade} onColorGradeChange={setSelectedColorGrade} topic={topic} illustration={illustration} hook={activeCopy} onHookChange={setActiveCopy} format={shotFormat} onFormatChange={(format) => { setWorkspace((current) => ({ ...current, selectedFormat: format, selectedAspectRatio: aspectForFormat(format) })); }} shotNote={shotNote} onShotNoteChange={setCustomShotNote} onNext={(nextFormat) => { setCampaign(slug(topic) || "untitled-campaign"); setTracking(shotTracking(nextFormat)); setTab("utm"); }} /></div>
-        <div {...panel("utm")}><UTMTool pollSelected={shotFormat === "Poll"} pollOptions={pollOptions} onPollOptionsChange={setPollOptions} selectedColorGrade={selectedColorGrade} topic={topic} illustration={illustration} activeCopy={activeCopy} onCopyChange={setActiveCopy} aspectRatio={selectedAspectRatio} shotNote={shotNote} destinationUrl={destinationUrl} onDestinationChange={setDestinationUrl} generatedUtmUrl={generatedUtmUrl} campaign={campaign} onCampaignChange={setCampaign} tracking={tracking} onTrackingChange={setTracking} onNext={(format) => { setComparisonFormats(comparisonHandoff(format)); setTab("ab"); }} /></div>
+        <div {...panel("utm")}><UTMTool selectedFormat={shotFormat} pollOptions={pollOptions} onPollOptionsChange={setPollOptions} selectedColorGrade={selectedColorGrade} topic={topic} illustration={illustration} activeCopy={activeCopy} onCopyChange={setActiveCopy} aspectRatio={selectedAspectRatio} shotNote={shotNote} destinationUrl={destinationUrl} onDestinationChange={setDestinationUrl} generatedUtmUrl={generatedUtmUrl} campaign={campaign} onCampaignChange={setCampaign} tracking={tracking} onTrackingChange={setTracking} onNext={(format) => { setComparisonFormats(comparisonHandoff(format)); setTab("ab"); }} /></div>
         <div {...panel("ab")}><ABTool draft={{ copy: activeCopy, url: generatedUtmUrl, platform: tracking.platform, aspectRatio: selectedAspectRatio, shotNote, colorGrade: selectedColorGrade }} campaign={campaign} formats={comparisonFormats} onFormatsChange={setComparisonFormats} /></div>
       </div>
       <FieldPulse hook={activeCopy} />

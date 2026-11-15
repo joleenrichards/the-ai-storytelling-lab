@@ -23,12 +23,12 @@ describe("creative campaign handoffs", () => {
     fireEvent.click(screen.getByRole("button", { name: "Edit working copy" }));
     expect(screen.getByRole("textbox", { name: "Active hook" }).getAttribute("value") ?? (screen.getByRole("textbox", { name: "Active hook" }) as HTMLTextAreaElement).value).toContain("A neighborhood bakery launching a sourdough subscription");
   });
-  it.each(["poll", "single-image", "document-carousel", "photo-series", "header-cta", "carousel"])("hands generated %s content to Variant A", (format) => {
+  it.each(["poll", "single-image", "document-carousel", "photo-series", "carousel"])("hands generated %s content to Variant A", (format) => {
     const Index = Route.options.component;
     if (typeof Index !== "function") throw new Error("Missing workspace");
     render(<Index />);
     fireEvent.click(screen.getByRole("tab", { name: /UTM Builder/ }));
-    fireEvent.click(screen.getByRole("button", { name: format === "header-cta" ? "newsletter" : format === "carousel" ? "instagram" : "linkedin" }));
+    fireEvent.click(screen.getByRole("button", { name: format === "carousel" ? "instagram" : "linkedin" }));
     fireEvent.click(screen.getByRole("button", { name: format }));
     fireEvent.click(screen.getByRole("button", { name: "Track in A/B Lab →" }));
     expect(screen.getByRole("combobox", { name: "Variant A format" })).toHaveValue(format);
@@ -42,12 +42,12 @@ describe("creative campaign handoffs", () => {
     ["9:16 Reel", "instagram", "reel"],
     ["4:5 Carousel", "instagram", "carousel"],
     ["1:1 Feed / Series", "linkedin", "photo-series"],
-  ])("overrides prior newsletter settings when arriving from %s", (shot, platform, format) => {
+  ])("overrides prior microblog settings when arriving from %s", (shot, platform, format) => {
     const Index = Route.options.component;
     if (typeof Index !== "function") throw new Error("Missing workspace");
     render(<Index />);
     fireEvent.click(screen.getByRole("tab", { name: /UTM Builder/ }));
-    fireEvent.click(screen.getByRole("button", { name: "newsletter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Bluesky" }));
     fireEvent.click(screen.getByRole("tab", { name: /Shot List/ }));
     fireEvent.click(screen.getByRole("button", { name: shot }));
     fireEvent.click(screen.getByRole("button", { name: "Move to UTM Builder →" }));
@@ -71,11 +71,11 @@ describe("creative campaign handoffs", () => {
     expect(screen.getByRole("button", { name: "single-image", pressed: true })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "tiktok" }));
     expect(screen.getByRole("button", { name: "video", pressed: true })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "newsletter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Bluesky" }));
     const url = within(screen.getByRole("tabpanel")).getAllByText(/https:.*utm_content=/)[0]?.textContent;
     if (!url) throw new Error("Missing tracking URL");
-    expect(new URL(url).searchParams.get("utm_content")).toBe("header-cta");
-    expect(new URL(url).searchParams.get("utm_medium")).toBe("email");
+    expect(new URL(url).searchParams.get("utm_content")).toBe("video");
+    expect(new URL(url).searchParams.get("utm_medium")).toBe("organic-social");
   });
   it("passes Feed / Series to the tracking URL as photo-series", () => {
     const Index = Route.options.component;

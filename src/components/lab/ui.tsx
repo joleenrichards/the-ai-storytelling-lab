@@ -30,12 +30,12 @@ export function Card({ children, className = "" }: { children: ReactNode; classN
 export function Field({ name, children }: { name: string; children: ReactNode }) {
   return <label className="block"><span className={label}>{name}</span>{children}</label>;
 }
-export function Seg<T extends string>({ options, value, onChange }: { options: readonly T[]; value: T; onChange: (v: T) => void }) {
+export function Seg<T extends string>({ options, value, onChange, labels }: { options: readonly T[]; value: T; onChange: (v: T) => void; labels?: Partial<Record<T, string>> }) {
   return (
     <div className="inline-flex flex-wrap border border-border bg-card">
       {options.map((o) => (
         <LabButton key={o} onClick={() => onChange(o)} aria-pressed={value === o}
-          className={`border-0 px-3 py-1.5 normal-case ${value === o ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}><PillIcon value={o} />{o}</LabButton>
+          className={`border-0 px-3 py-1.5 normal-case ${value === o ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}><PillIcon value={o} />{labels?.[o] ?? o}</LabButton>
       ))}
     </div>
   );

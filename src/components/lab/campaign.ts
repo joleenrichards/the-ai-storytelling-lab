@@ -21,7 +21,9 @@ export function starterCampaign(): Campaign {
 }
 export function restoreCampaign(raw: string | null): Campaign {
   try {
-    const parsed = campaignSchema.safeParse(JSON.parse(raw ?? "null"));
+    const saved = JSON.parse(raw ?? "null");
+    if (saved?.utmParams?.platform === "newsletter") saved.utmParams = { ...saved.utmParams, platform: "linkedin", format: "text-post" };
+    const parsed = campaignSchema.safeParse(saved);
     if (!parsed.success) return starterCampaign();
     return { ...parsed.data, utmParams: { ...parsed.data.utmParams, format: compatibleFormat(parsed.data.utmParams.platform, parsed.data.utmParams.format) } };
   } catch { return starterCampaign(); }

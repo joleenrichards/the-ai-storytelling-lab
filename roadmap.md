@@ -22,3 +22,5 @@
 
 - [x] Autosave validated active campaigns, reset all tools, and verify cold tab jumps.
 - [x] Add platform copy limits/bio badge and 5–500 character, 15-second suggestion guardrails.
+- [x] Add Bluesky/X microblog previews and exact counters; normalize production-format matching and verify cross-tab sync.
+- [x] Remove Newsletter from platform choices while preserving saved draft content.

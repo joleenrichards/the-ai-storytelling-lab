@@ -1,5 +1,11 @@
 import { expect, it } from "vitest";
 import { restoreCampaign, starterCampaign } from "./campaign";
+it("preserves draft content when retiring the Newsletter selection", () => {
+  const saved = { ...starterCampaign(), activeCopy: "My newsletter draft.", utmParams: { destination: "https://example.com", platform: "newsletter", format: "header-cta" } };
+  const restored = restoreCampaign(JSON.stringify(saved));
+  expect(restored.activeCopy).toBe("My newsletter draft.");
+  expect(restored.utmParams).toEqual({ destination: "https://example.com", platform: "linkedin", format: "text-post" });
+});
 it("starts every tool with field-guide-launch and a usable draft", () => {
   const draft = starterCampaign();
   expect(draft.campaignName).toBe("field-guide-launch");

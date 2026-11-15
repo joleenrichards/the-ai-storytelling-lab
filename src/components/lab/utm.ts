@@ -1,5 +1,6 @@
-export const PLATFORMS = ["linkedin", "facebook", "instagram", "tiktok", "newsletter", "x"] as const;
-export type UtmPlatform = (typeof PLATFORMS)[number];
+export const PLATFORMS = ["linkedin", "facebook", "instagram", "tiktok", "x", "bluesky"] as const;
+// Legacy newsletter formats remain readable in saved field logs, not selectable.
+export type UtmPlatform = (typeof PLATFORMS)[number] | "newsletter";
 export const PLATFORM_FORMATS = {
   linkedin: ["document-carousel", "photo-series", "single-image", "video", "poll", "text-post"],
   facebook: ["reel", "photo-series", "single-image", "carousel", "story", "link-post"],
@@ -7,9 +8,10 @@ export const PLATFORM_FORMATS = {
   tiktok: ["video", "photo-carousel", "story"],
   newsletter: ["header-cta", "inline-link", "digest-card", "footer-link"],
   x: ["text-post", "single-image", "video", "poll", "link-post"],
+  bluesky: ["text-post", "single-image", "video", "link-post"],
 } as const;
 export type UtmFormat = (typeof PLATFORM_FORMATS)[UtmPlatform][number];
-export type TrackingSelection = { platform: UtmPlatform; format: UtmFormat };
+export type TrackingSelection = { platform: (typeof PLATFORMS)[number]; format: UtmFormat };
 
 export function compatibleFormat(platform: UtmPlatform, format: UtmFormat): UtmFormat {
   const formats: readonly UtmFormat[] = PLATFORM_FORMATS[platform];

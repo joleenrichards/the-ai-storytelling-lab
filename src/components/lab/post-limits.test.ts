@@ -1,5 +1,15 @@
 import { expect, it } from "vitest";
 import { postCount } from "./post-limits";
+it("uses Bluesky's exact 300-grapheme boundary", () => {
+  expect(postCount("a".repeat(300), "", "bluesky").exceeded).toBe(false);
+  expect(postCount("a".repeat(301), "", "bluesky").exceeded).toBe(true);
+  expect(postCount("👩‍🌾".repeat(300), "", "bluesky").count).toBe(300);
+});
+it("counts Bluesky's full URL unless attached as a card", () => {
+  const url = "https://example.com/field-notes";
+  expect(postCount("Story", url, "bluesky").count).toBe(5 + 2 + url.length);
+  expect(postCount("a".repeat(300), url, "bluesky", true)).toEqual({ count: 300, limit: 300, exceeded: false });
+});
 it("counts X links as 23 characters", () => {
   expect(postCount("", "https://example.com/a-very-long-tracked-link?utm_campaign=launch", "x").count).toBe(23);
 });

@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, within, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Route } from "@/routes/index";
-import { aspectForFormat, fullPost } from "./draft";
+import { aspectForFormat, fullPost, proofMedia } from "./draft";
 import { generateHookAngles } from "@/lib/hooks.functions";
 
 vi.mock("@/lib/hooks.functions", () => ({ generateHookAngles: vi.fn() }));
@@ -11,6 +11,37 @@ vi.mock("./pulse", async (original) => ({ ...await original<typeof import("./pul
 beforeEach(() => { localStorage.clear(); });
 
 describe("shared editorial draft", () => {
+  it.each([
+    ["POLL", true, "1:1"], ["9:16 Reel", false, "9:16"], ["STORY", false, "9:16"], ["Vertical", false, "9:16"],
+    ["4:5 Carousel", false, "4:5"], ["Document-Carousel", false, "4:5"], ["Portrait", false, "4:5"],
+    ["1:1 Square", false, "1:1"], ["single-image", false, "1:1"],
+  ])("normalizes %s without sticky media", (format, poll, aspectRatio) => {
+    expect(proofMedia(String(format))).toEqual({ poll, aspectRatio });
+  });
+  it("switches away from polls and preserves production framing across microblog platforms", () => {
+    const Index = Route.options.component;
+    if (typeof Index !== "function") throw new Error("Missing workspace");
+    render(<Index />);
+    fireEvent.click(screen.getByRole("tab", { name: /Shot List/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Poll" }));
+    fireEvent.click(screen.getByRole("button", { name: "Move to UTM Builder →" }));
+    fireEvent.click(screen.getByRole("button", { name: "X" }));
+    expect(screen.getByRole("textbox", { name: "Poll option 1" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Bluesky" }));
+    expect(screen.queryByRole("textbox", { name: "Poll option 1" })).not.toBeInTheDocument();
+    expect(screen.getByRole("note")).toHaveTextContent("Bluesky doesn't support native polls");
+    expect(screen.getByRole("link", { name: "Bluesky link preview" })).toHaveAttribute("href", expect.stringContaining("utm_source=bluesky"));
+    fireEvent.click(screen.getByRole("button", { name: "single-image" }));
+    expect(screen.queryByRole("note")).not.toBeInTheDocument();
+    expect(screen.getByRole("figure", { name: "Creative frame 1:1" })).toBeInTheDocument();
+    for (const [format, ratio] of [["4:5 Carousel", "4:5"], ["9:16 Reel", "9:16"], ["1:1 Feed / Series", "1:1"]] as const) {
+      fireEvent.click(screen.getByRole("tab", { name: /Shot List/ }));
+      fireEvent.click(screen.getByRole("button", { name: format }));
+      fireEvent.click(screen.getByRole("tab", { name: /UTM Builder/ }));
+      expect(screen.getByRole("figure", { name: `Creative frame ${ratio}` })).toBeInTheDocument();
+    }
+    expect(generateHookAngles).not.toHaveBeenCalled();
+  }, 15000);
   it("hands off a native poll to LinkedIn and preserves edited options across tabs", () => {
     const Index = Route.options.component;
     if (typeof Index !== "function") throw new Error("Missing workspace");

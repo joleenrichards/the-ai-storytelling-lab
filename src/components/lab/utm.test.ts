@@ -1,5 +1,17 @@
 import { expect, it } from "vitest";
-import { buildUtm, compatibleFormat, shotTracking, PLATFORM_FORMATS } from "./utm";
+import { buildUtm, compatibleFormat, shotTracking, PLATFORM_FORMATS, PLATFORMS } from "./utm";
+it("offers social platforms without Newsletter", () => {
+  expect(PLATFORMS).toEqual(["linkedin", "facebook", "instagram", "tiktok", "x", "bluesky"]);
+});
+it.each(["x", "bluesky"] as const)("maps %s to its exact source and social medium", (platform) => {
+  const params = new URL(buildUtm("https://example.com", platform, "launch", "text-post")).searchParams;
+  expect(params.get("utm_source")).toBe(platform);
+  expect(params.get("utm_medium")).toBe("organic-social");
+});
+it("allows X polls but falls back to discussion text on Bluesky", () => {
+  expect(compatibleFormat("x", "poll")).toBe("poll");
+  expect(compatibleFormat("bluesky", "poll")).toBe("text-post");
+});
 it("builds lowercase utm url", () => {
   expect(buildUtm("Example.com/Shop", "instagram", "Spring Launch 26", "reel")).toBe("https://example.com/shop?utm_source=instagram&utm_medium=organic-social&utm_campaign=spring-launch-26&utm_content=reel");
 });
