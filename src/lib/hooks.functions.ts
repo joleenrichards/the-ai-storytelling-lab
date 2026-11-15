@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { ANGLE_TYPES } from "@/components/lab/hooks";
-import { EDITORIAL_SYSTEM_PROMPT, hookInputSchema, hookOutputSchema } from "./hook-generation";
+import { EDITORIAL_SYSTEM_PROMPT, ILLUSTRATION_PROMPT, hookInputSchema, hookOutputSchema } from "./hook-generation";
+import { sanitizeIllustration } from "@/components/lab/illustration";
 
 // Deliberately public: this sandbox accepts no private data and needs no account.
 export const generateHookAngles = createServerFn({ method: "POST" })
@@ -11,7 +12,7 @@ export const generateHookAngles = createServerFn({ method: "POST" })
       const response = await generateChatCompletion({
         model: "google/gemini-3.1-flash-lite",
         messages: [
-          { role: "system", content: EDITORIAL_SYSTEM_PROMPT },
+          { role: "system", content: `${EDITORIAL_SYSTEM_PROMPT}\n${ILLUSTRATION_PROMPT}` },
           { role: "user", content: JSON.stringify({ ...data, creativeDirection: crypto.randomUUID() }) },
         ],
         temperature: 1,
@@ -21,7 +22,7 @@ export const generateHookAngles = createServerFn({ method: "POST" })
       if (!content || typeof content !== "string") return { angles: null };
       const parsed = hookOutputSchema.parse(JSON.parse(content));
       if (parsed.angles.some((angle) => data.previousHooks.includes(angle.hook))) return { angles: null };
-      return { angles: ANGLE_TYPES.flatMap((type) => {
+      return { illustration: sanitizeIllustration(parsed.illustration), angles: ANGLE_TYPES.flatMap((type) => {
         const angle = parsed.angles.find((a) => a.type === type);
         return angle ? [{ type, text: angle.hook, note: angle.note }] : [];
       }) };

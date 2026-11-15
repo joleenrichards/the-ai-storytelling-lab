@@ -3,10 +3,13 @@ import { Card, CopyBtn, Field, LabButton, Seg, ToolHead, input, label } from "./
 import { FORMATS, SHOT_PRESETS, productionSheet, type Shot, type ShotFormat } from "./shots";
 import type { UtmFormat } from "./utm";
 import { FramePreview } from "./FramePreview";
+import { WorkingCopy } from "./WorkingCopy";
 const DEFAULT_PAL = [{ n: "Shadows", h: "#1F2B26" }, { n: "Mids", h: "#7A5A43" }, { n: "Highlights", h: "#F2E6D3" }, { n: "Accent", h: "#C85A32" }];
 
-export function ShotTool({ hook, onHookChange, onNext }: { hook: string; onHookChange: (hook: string) => void; onNext: (format: UtmFormat) => void }) {
-  const [fmt, setFmt] = useState<ShotFormat>("9:16 Reel");
+export function ShotTool({ hook, onHookChange, onNext, format, onFormatChange, shotNote, onShotNoteChange, topic = "Storytelling", illustration = null }: { hook: string; onHookChange: (hook: string) => void; onNext: (format: UtmFormat) => void; format?: ShotFormat; onFormatChange?: (format: ShotFormat) => void; shotNote?: string; onShotNoteChange?: (note: string) => void; topic?: string; illustration?: string | null }) {
+  const [localFormat, setLocalFormat] = useState<ShotFormat>("9:16 Reel");
+  const fmt = format ?? localFormat;
+  const setFmt = (next: ShotFormat) => { setLocalFormat(next); onFormatChange?.(next); };
   const [shotsByFormat, setShotsByFormat] = useState<Record<ShotFormat, Shot[]>>(() => ({
     "9:16 Reel": SHOT_PRESETS["9:16 Reel"].shots.map((shot) => ({ ...shot })),
     "4:5 Carousel": SHOT_PRESETS["4:5 Carousel"].shots.map((shot) => ({ ...shot })),
@@ -18,7 +21,7 @@ export function ShotTool({ hook, onHookChange, onNext }: { hook: string; onHookC
   const [customLight, setLight] = useState<string | null>(null);
   const [customLens, setLens] = useState<string | null>(null);
   const preset = SHOT_PRESETS[fmt];
-  const light = customLight ?? preset.light;
+  const light = shotNote ?? customLight ?? preset.light;
   const lens = customLens ?? preset.lens;
   const [pal, setPal] = useState(DEFAULT_PAL);
 
@@ -28,7 +31,7 @@ export function ShotTool({ hook, onHookChange, onNext }: { hook: string; onHookC
   return (
     <div>
       <ToolHead no="02" stage="Production" title="Shot List" desc="Give the story a frame, a rhythm, and a little texture." />
-      <div className="mb-5 border-l-4 border-primary bg-sage p-4"><Field name="Active hook"><textarea rows={3} className={`${input} bg-transparent`} value={hook} onChange={(e) => onHookChange(e.target.value)} /></Field></div>
+      <WorkingCopy copy={hook} onChange={onHookChange} />
       <div className="mb-4"><Seg options={FORMATS} value={fmt} onChange={setFmt} /></div>
       <div className="mb-4 border border-terracotta bg-card px-3 py-2 text-left font-mono text-xs leading-relaxed text-terracotta">{preset.spec}</div>
       <div className="grid gap-4 md:grid-cols-[1.3fr_1fr]">
@@ -52,9 +55,9 @@ export function ShotTool({ hook, onHookChange, onNext }: { hook: string; onHookC
           </form>
         </Card>
         <div className="space-y-4">
-          <FramePreview format={fmt} />
+          <FramePreview format={fmt} topic={topic} illustration={illustration} />
           <Card>
-            <Field name="Lighting notes"><textarea rows={3} className={`${input} text-base`} value={light} onChange={(e) => setLight(e.target.value)} /></Field>
+            <Field name="Lighting notes"><textarea rows={3} className={`${input} text-base`} value={light} onChange={(e) => { setLight(e.target.value); onShotNoteChange?.(e.target.value); }} /></Field>
             <div className="mt-3"><Field name="Lens notes"><textarea rows={2} className={`${input} text-base`} value={lens} onChange={(e) => setLens(e.target.value)} /></Field></div>
           </Card>
         </div>

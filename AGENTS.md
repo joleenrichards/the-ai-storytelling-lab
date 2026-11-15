@@ -37,4 +37,6 @@ use the editor.
 - Hook generation uses the AI Gateway inside a public server function with bounded input and validated JSON; static samples render without calls, and only explicit actions trigger inference with session history and a local fallback.
 - Keep the Field Manual in a focused presentation module using the shared accessible sheet primitive so opening guidance never unmounts tools or changes workspace state.
 - Pulse stores only aggregate totals and increments through a narrowly granted atomic RPC; browser-local flags discourage repeat votes without storing visitor identifiers, and totals refresh on focus and periodically.
-- Keep the shareable hook in workspace state, updating it to the first fresh angle or the explicitly handed-off angle so footer sharing never copies stale initial samples.
+- Keep active copy, aspect ratio, custom creative note, destination, and platform selection in workspace state; derive the tracked URL there so working-copy edits, production exports, proof, and footer sharing stay synchronized without storage or extra AI calls.
+- Keep Working Copy and Editorial Proof in focused presentation modules; pure aspect mappings and full-post serialization live in draft.ts so handoffs and clipboard output are testable.
+- Return topic illustrations in the existing hook inference response only; rebuild bounded XML through a strict primitive/attribute allowlist and render as isolated SVG images, with keyword-matched curated fallbacks for instant initial rendering and rejected art.

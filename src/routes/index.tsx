@@ -7,7 +7,9 @@ import { ABTool } from "@/components/lab/ABTool";
 import { UTMTool } from "@/components/lab/UTMTool";
 import { ShotTool } from "@/components/lab/ShotTool";
 import { Badge, LabButton } from "@/components/lab/ui";
-import { slug, shotTracking, type TrackingSelection } from "@/components/lab/utm";
+import { slug, shotTracking, buildUtm, type TrackingSelection } from "@/components/lab/utm";
+import { ASPECT_FORMATS, aspectForFormat, type AspectRatio } from "@/components/lab/draft";
+import { SHOT_PRESETS } from "@/components/lab/shots";
 import { SAMPLE_HOOKS } from "@/components/lab/hooks";
 import { SAMPLE_FORMATS, comparisonHandoff, type ComparisonFormats } from "@/components/lab/comparison";
 import { FieldManual } from "@/components/lab/FieldManual";
@@ -39,12 +41,19 @@ const SAMPLE_TOPIC = "Carousel posts get 3.1x more saves than single images";
 function Index() {
   const [tab, setTab] = useState("hooks");
   const [topic, setTopic] = useState(SAMPLE_TOPIC);
-  const [hook, setHook] = useState(SAMPLE_HOOKS[0]?.text ?? "");
-  const [shareableHook, setShareableHook] = useState(SAMPLE_HOOKS[0]?.text ?? "");
+  const [activeCopy, setActiveCopy] = useState(SAMPLE_HOOKS[0]?.text ?? "");
+  const [selectedAspectRatio, setSelectedAspectRatio] = useState<AspectRatio>("9:16");
+  const [customShotNote, setCustomShotNote] = useState<string | null>(null);
+  const [destinationUrl, setDestinationUrl] = useState("https://fieldnotes.studio/spring-blend");
+  const [topicArt, setTopicArt] = useState<{ topic: string; svg: string | null }>({ topic: SAMPLE_TOPIC, svg: null });
+  const illustration = topicArt.topic === topic ? topicArt.svg : null;
   const [campaign, setCampaign] = useState("Spring Blend Launch 26");
   const [tracking, setTracking] = useState<TrackingSelection>({ platform: "instagram", format: "reel" });
   const [activeCampaign, setActiveCampaign] = useState("Spring Blend Launch 26");
   const [comparisonFormats, setComparisonFormats] = useState<ComparisonFormats>(SAMPLE_FORMATS);
+  const shotFormat = ASPECT_FORMATS[selectedAspectRatio];
+  const shotNote = customShotNote ?? SHOT_PRESETS[shotFormat].light;
+  const generatedUtmUrl = buildUtm(destinationUrl, tracking.platform, campaign, tracking.format);
   const panel = (id: string) => ({ id: `panel-${id}`, role: "tabpanel", "aria-labelledby": `tab-${id}`, hidden: tab !== id, tabIndex: 0 });
   return (
     <main className="mx-auto max-w-6xl px-5 py-8 md:py-10">
@@ -70,12 +79,12 @@ function Index() {
         ))}
       </nav>
       <div className="pt-8 md:pt-10">
-        <div {...panel("hooks")}><HookTool topic={topic} onTopicChange={setTopic} onActiveHookChange={setShareableHook} onSendHook={(text) => { setHook(text); setShareableHook(text); setTab("shots"); }} /></div>
-        <div {...panel("shots")}><ShotTool hook={hook} onHookChange={setHook} onNext={(nextFormat) => { setCampaign(slug(topic) || "untitled-campaign"); setTracking(shotTracking(nextFormat)); setTab("utm"); }} /></div>
-        <div {...panel("utm")}><UTMTool campaign={campaign} onCampaignChange={setCampaign} tracking={tracking} onTrackingChange={setTracking} onNext={(format) => { setActiveCampaign(campaign); setComparisonFormats(comparisonHandoff(format)); setTab("ab"); }} /></div>
+        <div {...panel("hooks")}><HookTool activeCopy={activeCopy} topic={topic} onIllustrationChange={(svg, forTopic) => setTopicArt({ topic: forTopic, svg })} onTopicChange={setTopic} onActiveHookChange={setActiveCopy} onSendHook={(text) => { setActiveCopy(text); setTab("shots"); }} /></div>
+        <div {...panel("shots")}><ShotTool topic={topic} illustration={illustration} hook={activeCopy} onHookChange={setActiveCopy} format={shotFormat} onFormatChange={(format) => setSelectedAspectRatio(aspectForFormat(format))} shotNote={shotNote} onShotNoteChange={setCustomShotNote} onNext={(nextFormat) => { setCampaign(slug(topic) || "untitled-campaign"); setTracking(shotTracking(nextFormat)); setTab("utm"); }} /></div>
+        <div {...panel("utm")}><UTMTool topic={topic} illustration={illustration} activeCopy={activeCopy} onCopyChange={setActiveCopy} aspectRatio={selectedAspectRatio} shotNote={shotNote} destinationUrl={destinationUrl} onDestinationChange={setDestinationUrl} generatedUtmUrl={generatedUtmUrl} campaign={campaign} onCampaignChange={setCampaign} tracking={tracking} onTrackingChange={setTracking} onNext={(format) => { setActiveCampaign(campaign); setComparisonFormats(comparisonHandoff(format)); setTab("ab"); }} /></div>
         <div {...panel("ab")}><ABTool campaign={activeCampaign} formats={comparisonFormats} onFormatsChange={setComparisonFormats} /></div>
       </div>
-      <FieldPulse hook={shareableHook} />
+      <FieldPulse hook={activeCopy} />
       <footer className="border-t border-border pt-6 text-left">
         <div className="flex items-center gap-3"><ColophonMark /><h2 className="text-2xl">About This Lab</h2></div>
         <p className="mt-2 max-w-3xl text-lg leading-relaxed text-muted-foreground">Designed and prompted by Joleen Richards, social media strategist and visual storyteller. An independent experiment in sharper campaigns—with a human editorial voice.</p>

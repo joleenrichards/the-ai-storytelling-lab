@@ -18,6 +18,7 @@ describe("creative campaign handoffs", () => {
     const first = screen.getAllByRole("button", { name: "Send Hook to Shot List →" })[0];
     if (!first) throw new Error("Missing hook action");
     fireEvent.click(first);
+    fireEvent.click(screen.getByRole("button", { name: "Edit working copy" }));
     expect(screen.getByRole("textbox", { name: "Active hook" }).getAttribute("value") ?? (screen.getByRole("textbox", { name: "Active hook" }) as HTMLTextAreaElement).value).toContain("A neighborhood bakery launching a sourdough subscription");
   });
   it.each(["poll", "single-image", "document-carousel", "photo-series", "header-cta", "carousel"])("hands generated %s content to Variant A", (format) => {
@@ -49,7 +50,7 @@ describe("creative campaign handoffs", () => {
     fireEvent.click(screen.getByRole("button", { name: shot }));
     fireEvent.click(screen.getByRole("button", { name: "Move to UTM Builder →" }));
     expect(screen.getByRole("button", { name: platform, pressed: true })).toBeInTheDocument();
-    const url = within(screen.getByRole("tabpanel")).getByText(/https:.*utm_content=/).textContent;
+    const url = within(screen.getByRole("tabpanel")).getAllByText(/https:.*utm_content=/)[0]?.textContent;
     if (!url) throw new Error("Missing tracking URL");
     expect(new URL(url).searchParams.get("utm_source")).toBe(platform);
     expect(new URL(url).searchParams.get("utm_content")).toBe(format);
@@ -69,7 +70,7 @@ describe("creative campaign handoffs", () => {
     fireEvent.click(screen.getByRole("button", { name: "tiktok" }));
     expect(screen.getByRole("button", { name: "video", pressed: true })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "newsletter" }));
-    const url = within(screen.getByRole("tabpanel")).getByText(/https:.*utm_content=/).textContent;
+    const url = within(screen.getByRole("tabpanel")).getAllByText(/https:.*utm_content=/)[0]?.textContent;
     if (!url) throw new Error("Missing tracking URL");
     expect(new URL(url).searchParams.get("utm_content")).toBe("header-cta");
     expect(new URL(url).searchParams.get("utm_medium")).toBe("email");
@@ -83,7 +84,7 @@ describe("creative campaign handoffs", () => {
     fireEvent.click(screen.getByRole("button", { name: "Move to UTM Builder →" }));
     expect(screen.getByRole("button", { name: "photo-series", pressed: true })).toBeInTheDocument();
     const trackingPanel = within(screen.getByRole("tabpanel"));
-    const url = trackingPanel.getByText(/https:.*utm_content=photo-series/).textContent;
+    const url = trackingPanel.getAllByText(/https:.*utm_content=photo-series/)[0]?.textContent;
     if (!url) throw new Error("Missing tracking URL");
     expect(new URL(url).searchParams.get("utm_content")).toBe("photo-series");
     fireEvent.click(screen.getByRole("tab", { name: /Shot List/ }));
@@ -98,6 +99,7 @@ describe("creative campaign handoffs", () => {
     if (!firstCard) throw new Error("Missing hook action");
     const selected = firstCard.closest("section")?.querySelector("p")?.textContent;
     fireEvent.click(firstCard);
+    fireEvent.click(screen.getByRole("button", { name: "Edit working copy" }));
     expect(screen.getByRole("textbox", { name: "Active hook" })).toHaveValue(selected);
     fireEvent.change(screen.getByRole("textbox", { name: "Lighting notes" }), { target: { value: "Window light at sunset" } });
     fireEvent.click(screen.getByRole("tab", { name: /Hook & Angle/ }));

@@ -2,6 +2,8 @@
 - [x] Connect hook, shot plan, tracking campaign, and measurement while preserving session edits.
 - [x] Verify the full workflow and mobile layout; commit changes.
 - [ ] Activate portfolio link — waiting for Joleen's portfolio URL.
+- [x] Add shared editable drafts, working-copy bars, and a platform-aware Editorial Proof; verify copying and session preservation.
+- [x] Add safely validated topic-aware SVG illustrations to the same hook request, with five keyword-matched fallbacks in production and post previews.
 - [x] Add anonymous shared reactions and hook-sharing links; verify persistence, duplicate-click prevention, and mobile layout.
 - [x] Refine Field Manual with warm tint, terracotta border, hover lift, and a remembered first-visit beacon.
 - [x] Add the masthead Field Manual drawer and verify opening, dismissal, and mobile layout.

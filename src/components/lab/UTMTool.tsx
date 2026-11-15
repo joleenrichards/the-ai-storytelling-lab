@@ -1,17 +1,19 @@
 import { useState } from "react";
-import { buildUtm, PLATFORMS, PLATFORM_FORMATS, compatibleFormat, type TrackingSelection, type UtmFormat } from "./utm";
+import { WorkingCopy } from "./WorkingCopy";
+import { PostProof } from "./PostProof";
+import type { AspectRatio } from "./draft";
+import { PLATFORMS, PLATFORM_FORMATS, compatibleFormat, type TrackingSelection, type UtmFormat } from "./utm";
 import { Card, CopyBtn, Field, LabButton, Seg, ToolHead, input, label } from "./ui";
 
-export function UTMTool({ campaign, onCampaignChange, tracking, onTrackingChange, onNext }: { campaign: string; onCampaignChange: (campaign: string) => void; tracking: TrackingSelection; onTrackingChange: (tracking: TrackingSelection) => void; onNext: (format: UtmFormat) => void }) {
-  const [url, setUrl] = useState("https://fieldnotes.studio/spring-blend");
+export function UTMTool({ campaign, onCampaignChange, tracking, onTrackingChange, onNext, activeCopy, onCopyChange, aspectRatio, shotNote, destinationUrl: url, onDestinationChange: setUrl, generatedUtmUrl: out, topic, illustration = null }: { campaign: string; onCampaignChange: (campaign: string) => void; tracking: TrackingSelection; onTrackingChange: (tracking: TrackingSelection) => void; onNext: (format: UtmFormat) => void; activeCopy: string; onCopyChange: (copy: string) => void; aspectRatio: AspectRatio; shotNote: string; destinationUrl: string; onDestinationChange: (url: string) => void; generatedUtmUrl: string; topic: string; illustration?: string | null }) {
   const { platform: plat } = tracking;
   const format = compatibleFormat(plat, tracking.format);
   const formats = PLATFORM_FORMATS[plat];
   const [log, setLog] = useState<{ t: string; u: string }[]>([]);
-  const out = buildUtm(url, plat, campaign, format);
   return (
     <div>
       <ToolHead no="03" stage="Execution" title="UTM Builder" desc="A clean trail from your story to its impact." />
+      <WorkingCopy copy={activeCopy} onChange={onCopyChange} />
       <Card className="grid gap-5 md:grid-cols-2">
         <Field name="Destination URL"><input className={`${input} font-mono text-sm`} value={url} onChange={(e) => setUrl(e.target.value)} /></Field>
         <Field name="Campaign slug"><input className={input} value={campaign} onChange={(e) => onCampaignChange(e.target.value)} /></Field>
@@ -26,6 +28,7 @@ export function UTMTool({ campaign, onCampaignChange, tracking, onTrackingChange
           <LabButton disabled={!out} onClick={() => setLog([{ t: new Date().toLocaleTimeString(), u: out }, ...log])}>Add to log</LabButton>
         </div>
       </Card>
+      <PostProof copy={activeCopy} url={out} platform={plat} aspectRatio={aspectRatio} shotNote={shotNote} topic={topic} illustration={illustration} />
       <section className="mt-4 border-y border-border py-4">
         <div className="flex justify-between"><div className={label}>Session log ({log.length})</div>{log.length > 0 && <LabButton className="border-0 py-0 text-terracotta" onClick={() => setLog([])}>clear</LabButton>}</div>
         {log.length === 0 ? <p className="mt-2 italic text-muted-foreground">No links logged yet.</p> : (
