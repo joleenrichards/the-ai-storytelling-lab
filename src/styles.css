@@ -41,6 +41,7 @@
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
   --color-sage: var(--sage);
   --color-terracotta: var(--terracotta);
+  --color-manual-tint: var(--manual-tint);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -93,6 +94,7 @@
   --accent: oklch(0.58 0.14 42);
   --accent-foreground: oklch(0.98 0.005 80);
   --terracotta: oklch(0.59867470 0.15062780 39.71613923);
+  --manual-tint: oklch(0.98241649 0.00599326 43.33652478);
   --sage: oklch(0.94 0.012 170);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.98 0 0);
@@ -115,6 +117,7 @@
 }
 
 .dark {
+  --manual-tint: oklch(0.27 0.018 43);
   --background: oklch(0.129 0.042 264.695);
   --foreground: oklch(0.984 0.003 247.858);
   --card: oklch(0.208 0.042 265.755);

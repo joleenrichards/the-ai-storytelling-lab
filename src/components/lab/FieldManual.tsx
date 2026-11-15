@@ -1,6 +1,9 @@
 import { BookOpen, Compass, Aperture, Signpost, FlaskConical, ArrowDown, Dices } from "lucide-react";
 import { Sheet, SheetTrigger, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { LabButton } from "./ui";
+import { useEffect, useState } from "react";
+
+export const MANUAL_SEEN_KEY = "storytelling-lab:field-manual-seen";
 
 const RELAY = [
   { no: "01", title: "Hook & Angle", icon: Compass, text: "Find your opening. Try a Prompt shuffles a fresh topic and audience; Generate Angles explores three ways in.", handoff: "Send Hook to Shot List →" },
@@ -16,10 +19,17 @@ const PRINCIPLES = [
 ];
 
 export function FieldManual() {
+  const [beacon, setBeacon] = useState(false);
+  useEffect(() => {
+    try { setBeacon(localStorage.getItem(MANUAL_SEEN_KEY) !== "1"); } catch { setBeacon(true); }
+    const sync = (event: StorageEvent) => { if (event.key === MANUAL_SEEN_KEY && event.newValue === "1") setBeacon(false); };
+    window.addEventListener("storage", sync);
+    return () => window.removeEventListener("storage", sync);
+  }, []);
   return (
-    <Sheet>
+    <Sheet onOpenChange={(open) => { if (open) { setBeacon(false); try { localStorage.setItem(MANUAL_SEEN_KEY, "1"); } catch { /* Keep it dismissed for this visit. */ } } }}>
       <SheetTrigger asChild>
-        <LabButton primary className="rounded-full px-3 py-1.5 text-[11px] normal-case"><BookOpen size={14} strokeWidth={1.5} aria-hidden="true" />Field Manual</LabButton>
+        <LabButton className="relative rounded-full border-terracotta! bg-manual-tint! px-3 py-1.5 text-[11px] normal-case text-foreground transition-all hover:-translate-y-0.5 motion-reduce:transform-none motion-reduce:transition-none"><BookOpen size={14} strokeWidth={1.5} aria-hidden="true" />Field Manual{beacon && <span data-manual-beacon aria-hidden="true" className="pointer-events-none absolute -right-0.5 -top-0.5 h-2 w-2"><span className="absolute inset-0 rounded-full bg-terracotta/25 motion-safe:animate-ping motion-safe:[animation-duration:3s]" /><span className="absolute inset-0 rounded-full bg-terracotta" /></span>}</LabButton>
       </SheetTrigger>
       <SheetContent className="w-full overflow-y-auto px-5 py-8 text-left motion-reduce:animate-none motion-reduce:transition-none sm:max-w-xl sm:px-8">
         <header className="border-b-2 border-foreground pb-5">

@@ -5,7 +5,7 @@ import { generateHookAngles } from "@/lib/hooks.functions";
 import { TONES, SAMPLE_HOOKS, synthesize, buildPrompt, nextPromptScenario, type Tone } from "./hooks";
 import { Card, CopyBtn, Field, LabButton, Seg, ToolHead, input, label } from "./ui";
 
-export function HookTool({ topic, onTopicChange, onSendHook }: { topic: string; onTopicChange: (topic: string) => void; onSendHook: (hook: string) => void }) {
+export function HookTool({ topic, onTopicChange, onSendHook, onActiveHookChange }: { topic: string; onTopicChange: (topic: string) => void; onSendHook: (hook: string) => void; onActiveHookChange?: (hook: string) => void }) {
   const [aud, setAud] = useState("independent coffee roasters");
   const [tone, setTone] = useState<Tone>("Editorial & Warm");
   const [open, setOpen] = useState(false);
@@ -32,6 +32,7 @@ export function HookTool({ topic, onTopicChange, onSendHook }: { topic: string; 
       setLoading(false);
     }
     setHooks(nextHooks);
+    onActiveHookChange?.(nextHooks[0]?.text ?? "");
     history.current = [...history.current, ...nextHooks.map((h) => h.text)].slice(-9);
   }
   const prompt = buildPrompt(topic, aud, tone);

@@ -11,6 +11,7 @@ import { slug, shotTracking, type TrackingSelection } from "@/components/lab/utm
 import { SAMPLE_HOOKS } from "@/components/lab/hooks";
 import { SAMPLE_FORMATS, comparisonHandoff, type ComparisonFormats } from "@/components/lab/comparison";
 import { FieldManual } from "@/components/lab/FieldManual";
+import { FieldPulse } from "@/components/lab/FieldPulse";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -39,6 +40,7 @@ function Index() {
   const [tab, setTab] = useState("hooks");
   const [topic, setTopic] = useState(SAMPLE_TOPIC);
   const [hook, setHook] = useState(SAMPLE_HOOKS[0]?.text ?? "");
+  const [shareableHook, setShareableHook] = useState(SAMPLE_HOOKS[0]?.text ?? "");
   const [campaign, setCampaign] = useState("Spring Blend Launch 26");
   const [tracking, setTracking] = useState<TrackingSelection>({ platform: "instagram", format: "reel" });
   const [activeCampaign, setActiveCampaign] = useState("Spring Blend Launch 26");
@@ -68,12 +70,13 @@ function Index() {
         ))}
       </nav>
       <div className="pt-8 md:pt-10">
-        <div {...panel("hooks")}><HookTool topic={topic} onTopicChange={setTopic} onSendHook={(text) => { setHook(text); setTab("shots"); }} /></div>
+        <div {...panel("hooks")}><HookTool topic={topic} onTopicChange={setTopic} onActiveHookChange={setShareableHook} onSendHook={(text) => { setHook(text); setShareableHook(text); setTab("shots"); }} /></div>
         <div {...panel("shots")}><ShotTool hook={hook} onHookChange={setHook} onNext={(nextFormat) => { setCampaign(slug(topic) || "untitled-campaign"); setTracking(shotTracking(nextFormat)); setTab("utm"); }} /></div>
         <div {...panel("utm")}><UTMTool campaign={campaign} onCampaignChange={setCampaign} tracking={tracking} onTrackingChange={setTracking} onNext={(format) => { setActiveCampaign(campaign); setComparisonFormats(comparisonHandoff(format)); setTab("ab"); }} /></div>
         <div {...panel("ab")}><ABTool campaign={activeCampaign} formats={comparisonFormats} onFormatsChange={setComparisonFormats} /></div>
       </div>
-      <footer className="mt-12 border-t border-border pt-6 text-left">
+      <FieldPulse hook={shareableHook} />
+      <footer className="border-t border-border pt-6 text-left">
         <div className="flex items-center gap-3"><ColophonMark /><h2 className="text-2xl">About This Lab</h2></div>
         <p className="mt-2 max-w-3xl text-lg leading-relaxed text-muted-foreground">Designed and prompted by Joleen Richards, social media strategist and visual storyteller. An independent experiment in sharper campaigns—with a human editorial voice.</p>
         <span aria-disabled="true" title="Portfolio address not yet provided" className="mt-3 inline-block font-mono text-xs text-muted-foreground">View Portfolio →</span>

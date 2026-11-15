@@ -14,13 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      field_pulse_counts: {
+        Row: {
+          reaction: string
+          total: number
+        }
+        Insert: {
+          reaction: string
+          total?: number
+        }
+        Update: {
+          reaction?: string
+          total?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      add_field_pulse: { Args: { reaction_key: string }; Returns: number }
     }
     Enums: {
       [_ in never]: never

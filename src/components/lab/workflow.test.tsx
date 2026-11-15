@@ -4,6 +4,7 @@ import { Route } from "@/routes/index";
 
 vi.mock("@/lib/hooks.functions", () => ({ generateHookAngles: vi.fn().mockResolvedValue({ angles: null }) }));
 vi.mock("@tanstack/react-start", () => ({ useServerFn: (fn: unknown) => fn }));
+vi.mock("./pulse", async (original) => ({ ...await original<typeof import("./pulse")>(), readPulse: vi.fn(() => new Promise(() => {})), addPulse: vi.fn() }));
 
 describe("creative campaign handoffs", () => {
   it("shuffles the topic and audience and sends the fresh hook to production", async () => {

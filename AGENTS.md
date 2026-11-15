@@ -36,3 +36,5 @@ use the editor.
 - Keep framing wireframes and decorative field marks in focused presentational modules; keep prompt scenarios in the pure hooks module so the five-item cycle can be tested without the UI.
 - Hook generation uses the AI Gateway inside a public server function with bounded input and validated JSON; static samples render without calls, and only explicit actions trigger inference with session history and a local fallback.
 - Keep the Field Manual in a focused presentation module using the shared accessible sheet primitive so opening guidance never unmounts tools or changes workspace state.
+- Pulse stores only aggregate totals and increments through a narrowly granted atomic RPC; browser-local flags discourage repeat votes without storing visitor identifiers, and totals refresh on focus and periodically.
+- Keep the shareable hook in workspace state, updating it to the first fresh angle or the explicitly handed-off angle so footer sharing never copies stale initial samples.
