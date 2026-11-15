@@ -81,11 +81,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "The A/B Ledger" },
-      { name: "description", content: "Social media A/B test calculator" },
+      { title: "Field Notes: AI Marketing Lab" },
+      { name: "description", content: "Lightweight AI and data tools for social media strategy." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "The A/B Ledger" },
-      { property: "og:description", content: "Social media A/B test calculator" },
+      { property: "og:title", content: "Field Notes: AI Marketing Lab" },
+      { property: "og:description", content: "Lightweight AI and data tools for social media strategy." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
@@ -93,7 +93,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" },
       {
         rel: "stylesheet",
         href: appCss,
