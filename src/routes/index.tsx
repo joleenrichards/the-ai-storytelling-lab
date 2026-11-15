@@ -7,6 +7,7 @@ import { ShotTool } from "@/components/lab/ShotTool";
 import { Badge, LabButton } from "@/components/lab/ui";
 import { slug, shotTracking, type TrackingSelection } from "@/components/lab/utm";
 import { synthesize } from "@/components/lab/hooks";
+import { SAMPLE_FORMATS, comparisonHandoff, type ComparisonFormats } from "@/components/lab/comparison";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -38,6 +39,7 @@ function Index() {
   const [campaign, setCampaign] = useState("Spring Blend Launch 26");
   const [tracking, setTracking] = useState<TrackingSelection>({ platform: "instagram", format: "reel" });
   const [activeCampaign, setActiveCampaign] = useState("Spring Blend Launch 26");
+  const [comparisonFormats, setComparisonFormats] = useState<ComparisonFormats>(SAMPLE_FORMATS);
   const panel = (id: string) => ({ id: `panel-${id}`, role: "tabpanel", "aria-labelledby": `tab-${id}`, hidden: tab !== id, tabIndex: 0 });
   return (
     <main className="mx-auto max-w-6xl px-5 py-8 md:py-10">
@@ -65,8 +67,8 @@ function Index() {
       <div className="pt-8 md:pt-10">
         <div {...panel("hooks")}><HookTool topic={topic} onTopicChange={setTopic} onSendHook={(text) => { setHook(text); setTab("shots"); }} /></div>
         <div {...panel("shots")}><ShotTool hook={hook} onHookChange={setHook} onNext={(nextFormat) => { setCampaign(slug(topic) || "untitled-campaign"); setTracking(shotTracking(nextFormat)); setTab("utm"); }} /></div>
-        <div {...panel("utm")}><UTMTool campaign={campaign} onCampaignChange={setCampaign} tracking={tracking} onTrackingChange={setTracking} onNext={() => { setActiveCampaign(campaign); setTab("ab"); }} /></div>
-        <div {...panel("ab")}><ABTool campaign={activeCampaign} /></div>
+        <div {...panel("utm")}><UTMTool campaign={campaign} onCampaignChange={setCampaign} tracking={tracking} onTrackingChange={setTracking} onNext={(format) => { setActiveCampaign(campaign); setComparisonFormats(comparisonHandoff(format)); setTab("ab"); }} /></div>
+        <div {...panel("ab")}><ABTool campaign={activeCampaign} formats={comparisonFormats} onFormatsChange={setComparisonFormats} /></div>
       </div>
       <footer className="mt-12 border-t border-border pt-6 text-left">
         <h2 className="text-2xl">About This Lab</h2>

@@ -3,6 +3,21 @@ import { describe, expect, it } from "vitest";
 import { Route } from "@/routes/index";
 
 describe("creative campaign handoffs", () => {
+  it.each(["poll", "single-image", "document-carousel", "photo-series", "header-cta", "carousel"])("hands generated %s content to Variant A", (format) => {
+    const Index = Route.options.component;
+    if (typeof Index !== "function") throw new Error("Missing workspace");
+    render(<Index />);
+    fireEvent.click(screen.getByRole("tab", { name: /UTM Builder/ }));
+    fireEvent.click(screen.getByRole("button", { name: format === "header-cta" ? "newsletter" : format === "carousel" ? "instagram" : "linkedin" }));
+    fireEvent.click(screen.getByRole("button", { name: format }));
+    fireEvent.click(screen.getByRole("button", { name: "Track in A/B Lab →" }));
+    expect(screen.getByRole("combobox", { name: "Variant A format" })).toHaveValue(format);
+    expect(screen.getByRole("combobox", { name: "Variant B format" })).toHaveValue(format === "single-image" ? "poll" : "single-image");
+    fireEvent.change(screen.getByRole("combobox", { name: "Variant B format" }), { target: { value: "video" } });
+    fireEvent.click(screen.getByRole("tab", { name: /UTM Builder/ }));
+    fireEvent.click(screen.getByRole("tab", { name: /A\/B Lab/ }));
+    expect(screen.getByRole("combobox", { name: "Variant B format" })).toHaveValue("video");
+  });
   it.each([
     ["9:16 Reel", "instagram", "reel"],
     ["4:5 Carousel", "instagram", "carousel"],

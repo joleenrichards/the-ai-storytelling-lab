@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { buildUtm, PLATFORMS, PLATFORM_FORMATS, compatibleFormat, type TrackingSelection } from "./utm";
+import { buildUtm, PLATFORMS, PLATFORM_FORMATS, compatibleFormat, type TrackingSelection, type UtmFormat } from "./utm";
 import { Card, CopyBtn, Field, LabButton, Seg, ToolHead, input, label } from "./ui";
 
-export function UTMTool({ campaign, onCampaignChange, tracking, onTrackingChange, onNext }: { campaign: string; onCampaignChange: (campaign: string) => void; tracking: TrackingSelection; onTrackingChange: (tracking: TrackingSelection) => void; onNext: () => void }) {
+export function UTMTool({ campaign, onCampaignChange, tracking, onTrackingChange, onNext }: { campaign: string; onCampaignChange: (campaign: string) => void; tracking: TrackingSelection; onTrackingChange: (tracking: TrackingSelection) => void; onNext: (format: UtmFormat) => void }) {
   const [url, setUrl] = useState("https://fieldnotes.studio/spring-blend");
   const { platform: plat } = tracking;
   const format = compatibleFormat(plat, tracking.format);
@@ -32,7 +32,7 @@ export function UTMTool({ campaign, onCampaignChange, tracking, onTrackingChange
           <ul className="mt-2 divide-y divide-border">{log.map((l, i) => <li key={i} className="flex gap-3 py-2 font-mono text-xs"><span className="shrink-0 text-muted-foreground">{l.t}</span><span className="min-w-0 break-all">{l.u}</span></li>)}</ul>
         )}
       </section>
-      <LabButton primary className="mt-5" onClick={onNext}>Track in A/B Lab →</LabButton>
+      <LabButton primary className="mt-5" disabled={!out} onClick={() => onNext(format)}>Track in A/B Lab →</LabButton>
     </div>
   );
 }
