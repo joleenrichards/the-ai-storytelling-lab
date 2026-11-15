@@ -2,6 +2,8 @@ import { useState, type ReactNode, type ButtonHTMLAttributes } from "react";
 import { BarChart2, Image, LayoutGrid, Clapperboard, Layers, Mail, Link, Type } from "lucide-react";
 
 function PillIcon({ value }: { value: string }) {
+  if (value === "x") return <svg width={14} height={14} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="shrink-0"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3L12 14.6 5.5 22H2.3l7.9-9L1 2h6.5l4.5 6.8L18.9 2Zm-1.1 18h1.7L6.6 4H4.8l13 16Z" /></svg>;
+  if (value === "bluesky") return <svg width={14} height={14} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="shrink-0"><path d="M5.3 3.8C8 5.8 10.8 9.9 12 12.1c1.2-2.2 4-6.3 6.7-8.3C20.6 2.4 24 1.3 24 4.8c0 .7-.4 5.9-.7 6.7-1 2.9-4.5 3.6-7.6 3 5.4.9 6.8 4 3.8 7.1-5.6 5.8-7.1-1.4-7.5-3.3-.4 1.9-1.9 9.1-7.5 3.3-3-3.1-1.6-6.2 3.8-7.1-3.1.6-6.6-.1-7.6-3C.4 10.7 0 5.5 0 4.8 0 1.3 3.4 2.4 5.3 3.8Z" /></svg>;
   const Icon = /poll|linkedin|facebook|Engagements|Poll Votes/.test(value) ? BarChart2
     : /photo-series|Series/.test(value) ? LayoutGrid
     : /carousel|Carousel/.test(value) ? Layers
