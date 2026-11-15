@@ -6,3 +6,4 @@
 - [x] Add Feed / Series shot presets and verify photo-series tracking handoff.
 - [x] Add channel-specific tracking formats, automatic mediums, and compatible production handoffs; verify copying and platform switches.
 - [x] Add A/B format selectors, format-aware verdicts and bias guardrails, and verify UTM-to-measurement handoffs.
+- [x] Add field-guide accents and icons, prompt shuffle, framing wireframes, and visual measurement readouts; verify interactions and layout.

@@ -33,3 +33,4 @@ use the editor.
 - Keep shot presets and production-sheet serialization in plain TypeScript; retain separate in-session checklists per format and nullable custom technical notes so switching formats updates defaults without overwriting edits.
 - Define channel formats, compatibility fallback, and shot tracking mappings in the pure UTM module; hold platform and format as one workspace selection so channel switches and production handoffs cannot generate mismatched URLs.
 - Keep A/B comparison defaults, handoffs, and verdict/guardrail logic in plain TypeScript; hold both selected formats in the workspace so tab changes preserve edits and handoffs retain exact UTM content.
+- Keep framing wireframes and decorative field marks in focused presentational modules; keep prompt scenarios in the pure hooks module so the five-item cycle can be tested without the UI.

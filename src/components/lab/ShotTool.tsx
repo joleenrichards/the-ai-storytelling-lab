@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card, CopyBtn, Field, LabButton, Seg, ToolHead, input, label } from "./ui";
 import { FORMATS, SHOT_PRESETS, productionSheet, type Shot, type ShotFormat } from "./shots";
 import type { UtmFormat } from "./utm";
+import { FramePreview } from "./FramePreview";
 const DEFAULT_PAL = [{ n: "Shadows", h: "#1F2B26" }, { n: "Mids", h: "#7A5A43" }, { n: "Highlights", h: "#F2E6D3" }, { n: "Accent", h: "#C85A32" }];
 
 export function ShotTool({ hook, onHookChange, onNext }: { hook: string; onHookChange: (hook: string) => void; onNext: (format: UtmFormat) => void }) {
@@ -26,7 +27,7 @@ export function ShotTool({ hook, onHookChange, onNext }: { hook: string; onHookC
 
   return (
     <div>
-      <ToolHead no="02" stage="Production" title="Shot List" desc="Turn an abstract hook into a concrete visual plan with framing checklists, aspect ratios, and color grading notes before you pick up a camera." />
+      <ToolHead no="02" stage="Production" title="Shot List" desc="Give the story a frame, a rhythm, and a little texture." />
       <div className="mb-5 border-l-4 border-primary bg-sage p-4"><Field name="Active hook"><textarea rows={3} className={`${input} bg-transparent`} value={hook} onChange={(e) => onHookChange(e.target.value)} /></Field></div>
       <div className="mb-4"><Seg options={FORMATS} value={fmt} onChange={setFmt} /></div>
       <div className="mb-4 border border-terracotta bg-card px-3 py-2 text-left font-mono text-xs leading-relaxed text-terracotta">{preset.spec}</div>
@@ -51,7 +52,7 @@ export function ShotTool({ hook, onHookChange, onNext }: { hook: string; onHookC
           </form>
         </Card>
         <div className="space-y-4">
-          <div className="mx-auto flex items-center justify-center border border-dashed border-terracotta bg-card font-mono text-xs text-terracotta" style={{ aspectRatio: fmt.split(" ")[0]?.replace(":", "/"), maxHeight: 220 }}>{fmt.split(" ")[0]}</div>
+          <FramePreview format={fmt} />
           <Card>
             <Field name="Lighting notes"><textarea rows={3} className={`${input} text-base`} value={light} onChange={(e) => setLight(e.target.value)} /></Field>
             <div className="mt-3"><Field name="Lens notes"><textarea rows={2} className={`${input} text-base`} value={lens} onChange={(e) => setLens(e.target.value)} /></Field></div>

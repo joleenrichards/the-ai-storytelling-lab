@@ -11,7 +11,7 @@ export function UTMTool({ campaign, onCampaignChange, tracking, onTrackingChange
   const out = buildUtm(url, plat, campaign, format);
   return (
     <div>
-      <ToolHead no="03" stage="Execution" title="UTM Builder" desc="Package finished stories with consistent, lowercase tracking links so every channel's performance is clean and measurable from the moment it goes live." />
+      <ToolHead no="03" stage="Execution" title="UTM Builder" desc="A clean trail from your story to its impact." />
       <Card className="grid gap-5 md:grid-cols-2">
         <Field name="Destination URL"><input className={`${input} font-mono text-sm`} value={url} onChange={(e) => setUrl(e.target.value)} /></Field>
         <Field name="Campaign slug"><input className={input} value={campaign} onChange={(e) => onCampaignChange(e.target.value)} /></Field>

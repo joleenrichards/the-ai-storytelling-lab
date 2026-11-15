@@ -1,5 +1,16 @@
 export const TONES = ["Editorial & Warm", "Data-Driven", "Contrarian"] as const;
 export type Tone = (typeof TONES)[number];
+export const PROMPT_SCENARIOS = [
+  { topic: "A neighborhood bakery launching a sourdough subscription", audience: "local bread lovers" },
+  { topic: "Summarizing a 30-page sustainability report for LinkedIn", audience: "sustainability-minded business leaders" },
+  { topic: "Behind-the-scenes of a solo rainy-day photo shoot", audience: "independent photographers" },
+  { topic: "A community bookshop turning staff picks into a weekly series", audience: "curious neighborhood readers" },
+  { topic: "A refill shop introducing a zero-waste starter kit", audience: "first-time low-waste shoppers" },
+] as const;
+export function nextPromptScenario(index: number) {
+  const next = (index + 1) % PROMPT_SCENARIOS.length;
+  return { index: next, scenario: PROMPT_SCENARIOS[next] ?? PROMPT_SCENARIOS[0] };
+}
 
 export function synthesize(topic: string, audience: string, tone: Tone) {
   const t = topic.trim() || "your topic";

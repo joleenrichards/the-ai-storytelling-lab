@@ -35,7 +35,7 @@ export function ABTool({ campaign, formats, onFormatsChange }: { campaign: strin
   );
   return (
     <div>
-      <ToolHead no="04" stage="Measurement" title="A/B Lab" desc="Separate real audience lift from algorithm noise—check whether a creative variation earned a statistically confident win before scaling the format." />
+      <ToolHead no="04" stage="Measurement" title="A/B Lab" desc="Follow the signal. Question the noise." />
       <div className="mb-5 border-l-4 border-terracotta pl-4"><div className={label}>Active campaign</div><p className="mt-1 break-words font-mono text-sm">{campaign || "Untitled campaign"}</p></div>
       <div className="mb-4 flex flex-wrap justify-between gap-3">
         <Seg options={METRICS} value={metric} onChange={setMetric} />
@@ -46,6 +46,12 @@ export function ABTool({ campaign, formats, onFormatsChange }: { campaign: strin
         <Card><div className={label}>Relative lift (B vs A)</div><div className={`font-mono text-4xl ${lift > 0 ? "text-primary" : lift < 0 ? "text-terracotta" : ""}`}>{lift > 0 ? "+" : ""}{f(lift, 1)}%</div></Card>
         <Card><div className={label}>Confidence score</div><div className={`font-mono text-4xl ${confidence >= 95 ? "text-primary" : ""}`}>{f(confidence, 1)}%</div></Card>
       </div>
+      <section aria-label="Visual test results" className="mt-5 grid gap-8 border-y border-border py-6 md:grid-cols-2">
+        <div><h3 className={label}>{metric} rate comparison</h3><div className="mt-4 grid grid-cols-2 gap-5">
+          {([{ id: "A", rate: ra, format: formats.a }, { id: "B", rate: rb, format: formats.b }]).map((variant) => <div key={variant.id} className="min-w-0"><div className="flex h-24 items-end border-b border-border"><div className={`rate-bar w-full ${variant.id === w ? "bg-primary" : "bg-terracotta/60"}`} style={{ height: `${Math.max(0, Math.min(100, variant.rate / Math.max(ra, rb, 0.001) * 100))}%` }} /></div><div className="mt-2 font-mono text-xs">{variant.id} · {f(variant.rate)}%</div><div className="mt-1 break-words font-mono text-[10px] text-muted-foreground">{variant.format}</div></div>)}
+        </div></div>
+        <div><h3 className={label}>Confidence gauge</h3><div className="mt-4 font-mono text-2xl text-primary">{f(confidence, 1)}%</div><div role="meter" aria-label="Test confidence" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.max(0, Math.min(100, confidence))} className="mt-3 grid grid-cols-20 gap-1">{Array.from({ length: 20 }, (_, i) => <span key={i} className={`h-4 ${confidence >= (i + 1) * 5 ? "bg-primary" : "bg-border"}`} />)}</div><div className="mt-3 grid grid-cols-[1fr_1fr_1.4fr] gap-2 font-mono text-[9px] leading-relaxed"><span className={confidence < 80 ? "text-primary" : "text-muted-foreground"}>Low<br />&lt;80%</span><span className={confidence >= 80 && confidence < 95 ? "text-primary" : "text-muted-foreground"}>Trending<br />80–95%</span><span className={confidence >= 95 ? "text-primary" : "text-muted-foreground"}>Statistically Confident<br />≥95%</span></div></div>
+      </section>
       <aside className="mt-4 border-l-4 border-primary bg-sage p-6 text-left">
         <div className={`${label} text-primary`}>Editorial verdict</div>
         <p className="mt-2 text-2xl leading-relaxed">{verdict}</p>

@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { Compass, Aperture, Signpost, FlaskConical } from "lucide-react";
+import { BotanicalMark, ColophonMark } from "@/components/lab/FieldMarks";
 import { HookTool } from "@/components/lab/HookTool";
 import { ABTool } from "@/components/lab/ABTool";
 import { UTMTool } from "@/components/lab/UTMTool";
@@ -24,10 +26,10 @@ export const Route = createFileRoute("/")({
 });
 
 const TABS = [
-  { id: "hooks", n: "01", name: "Hook & Angle", stage: "Planning" },
-  { id: "shots", n: "02", name: "Shot List", stage: "Production" },
-  { id: "utm", n: "03", name: "UTM Builder", stage: "Execution" },
-  { id: "ab", n: "04", name: "A/B Lab", stage: "Measurement" },
+  { id: "hooks", n: "01", name: "Hook & Angle", stage: "Planning", icon: Compass },
+  { id: "shots", n: "02", name: "Shot List", stage: "Production", icon: Aperture },
+  { id: "utm", n: "03", name: "UTM Builder", stage: "Execution", icon: Signpost },
+  { id: "ab", n: "04", name: "A/B Lab", stage: "Measurement", icon: FlaskConical },
 ];
 
 const SAMPLE_TOPIC = "Carousel posts get 3.1x more saves than single images";
@@ -44,9 +46,9 @@ function Index() {
   return (
     <main className="mx-auto max-w-6xl px-5 py-8 md:py-10">
       <header className="border-b-2 border-foreground pb-6 text-left">
-        <Badge>PLANNING • PRODUCTION • EXECUTION</Badge>
+        <div className="flex flex-wrap items-center gap-4"><Badge>PLANNING • PRODUCTION • EXECUTION</Badge><BotanicalMark /></div>
         <h1 className="mt-4 text-5xl font-medium md:text-6xl">The AI Storytelling Lab</h1>
-        <p className="mt-3 max-w-3xl text-left text-xl leading-relaxed text-muted-foreground">A small, experimental AI toolkit built around how good campaigns actually get made—moving from early narrative framing and visual shot planning to clean attribution and post-launch testing.</p>
+        <p className="mt-3 max-w-3xl text-left text-xl leading-relaxed text-muted-foreground">An experimental AI field guide for stories worth sharing—from first spark to final signal.</p>
       </header>
       <nav className="grid grid-cols-2 border-b border-border md:grid-cols-4" role="tablist" aria-label="Creative campaign workflow">
         {TABS.map((t, i) => (
@@ -60,7 +62,7 @@ function Index() {
             }}
             className={`min-w-0 justify-between border-0 border-b-2 bg-transparent px-3 py-4 normal-case ${tab === t.id ? "border-terracotta bg-sage" : "border-transparent text-muted-foreground hover:text-foreground"}`}>
             <span className="min-w-0 text-left"><span className="mb-1 block font-mono text-[10px] uppercase">{t.stage}</span><span className="mr-2 font-mono text-xs text-terracotta">{t.n}</span><span className="font-serif text-lg">{t.name}</span></span>
-            <span aria-hidden="true" className="text-terracotta">{i < 3 ? "→" : "↗"}</span>
+            <t.icon aria-hidden="true" size={21} strokeWidth={1.5} className="shrink-0 text-terracotta" />
           </LabButton>
         ))}
       </nav>
@@ -71,8 +73,8 @@ function Index() {
         <div {...panel("ab")}><ABTool campaign={activeCampaign} formats={comparisonFormats} onFormatsChange={setComparisonFormats} /></div>
       </div>
       <footer className="mt-12 border-t border-border pt-6 text-left">
-        <h2 className="text-2xl">About This Lab</h2>
-        <p className="mt-2 max-w-3xl text-lg leading-relaxed text-muted-foreground">The Storytelling Lab is an independent sandbox designed and prompted by Joleen Richards—a social media strategist and visual storyteller. It is an ongoing experiment in rapid prototyping: turning everyday campaign workflows into lightweight, interactive tools without losing a human editorial voice.</p>
+        <div className="flex items-center gap-3"><ColophonMark /><h2 className="text-2xl">About This Lab</h2></div>
+        <p className="mt-2 max-w-3xl text-lg leading-relaxed text-muted-foreground">Designed and prompted by Joleen Richards, social media strategist and visual storyteller. An independent experiment in sharper campaigns—with a human editorial voice.</p>
         <span aria-disabled="true" title="Portfolio address not yet provided" className="mt-3 inline-block font-mono text-xs text-muted-foreground">View Portfolio →</span>
       </footer>
     </main>

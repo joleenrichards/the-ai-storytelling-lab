@@ -1,18 +1,20 @@
 import { useState } from "react";
-import { TONES, synthesize, buildPrompt, type Tone } from "./hooks";
+import { Dices } from "lucide-react";
+import { TONES, synthesize, buildPrompt, nextPromptScenario, type Tone } from "./hooks";
 import { Card, CopyBtn, Field, LabButton, Seg, ToolHead, input, label } from "./ui";
 
 export function HookTool({ topic, onTopicChange, onSendHook }: { topic: string; onTopicChange: (topic: string) => void; onSendHook: (hook: string) => void }) {
   const [aud, setAud] = useState("independent coffee roasters");
   const [tone, setTone] = useState<Tone>("Editorial & Warm");
   const [open, setOpen] = useState(false);
+  const [scenarioIndex, setScenarioIndex] = useState(-1);
   const hooks = synthesize(topic, aud, tone);
   const prompt = buildPrompt(topic, aud, tone);
   return (
     <div>
-      <ToolHead no="01" stage="Planning" title="Hook & Angle" desc="Test different psychological entry points for a topic before committing to a script or caption—and generate a structured prompt to explore further in your favorite LLM." />
+      <ToolHead no="01" stage="Planning" title="Hook & Angle" desc="One topic. Three ways into the story." />
       <Card className="grid gap-5 md:grid-cols-2">
-        <Field name="Core topic / stat"><textarea rows={2} className={input} value={topic} onChange={(e) => onTopicChange(e.target.value)} /></Field>
+        <div><div className="mb-2 flex flex-wrap items-center justify-between gap-2"><span className={label}>Narrative seed</span><LabButton className="px-2 py-1 normal-case" onClick={() => { const next = nextPromptScenario(scenarioIndex); setScenarioIndex(next.index); onTopicChange(next.scenario.topic); setAud(next.scenario.audience); }}><Dices size={16} strokeWidth={1.5} aria-hidden="true" />Try a Prompt</LabButton></div><Field name="Core topic / stat"><textarea rows={2} className={input} value={topic} onChange={(e) => onTopicChange(e.target.value)} /></Field></div>
         <Field name="Audience"><input className={input} value={aud} onChange={(e) => setAud(e.target.value)} /></Field>
         <div className="md:col-span-2"><div className={`${label} mb-2`}>Strategic tone</div><Seg options={TONES} value={tone} onChange={setTone} /></div>
       </Card>

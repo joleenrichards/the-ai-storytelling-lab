@@ -3,6 +3,18 @@ import { describe, expect, it } from "vitest";
 import { Route } from "@/routes/index";
 
 describe("creative campaign handoffs", () => {
+  it("shuffles the topic and audience and sends the fresh hook to production", () => {
+    const Index = Route.options.component;
+    if (typeof Index !== "function") throw new Error("Missing workspace");
+    render(<Index />);
+    fireEvent.click(screen.getByRole("button", { name: "Try a Prompt" }));
+    expect(screen.getByRole("textbox", { name: "Core topic / stat" })).toHaveValue("A neighborhood bakery launching a sourdough subscription");
+    expect(screen.getByRole("textbox", { name: "Audience" })).toHaveValue("local bread lovers");
+    const first = screen.getAllByRole("button", { name: "Send Hook to Shot List →" })[0];
+    if (!first) throw new Error("Missing hook action");
+    fireEvent.click(first);
+    expect(screen.getByRole("textbox", { name: "Active hook" }).getAttribute("value") ?? (screen.getByRole("textbox", { name: "Active hook" }) as HTMLTextAreaElement).value).toContain("A neighborhood bakery launching a sourdough subscription");
+  });
   it.each(["poll", "single-image", "document-carousel", "photo-series", "header-cta", "carousel"])("hands generated %s content to Variant A", (format) => {
     const Index = Route.options.component;
     if (typeof Index !== "function") throw new Error("Missing workspace");
