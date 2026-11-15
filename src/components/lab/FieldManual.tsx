@@ -19,7 +19,7 @@ export function FieldManual() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <LabButton className="rounded-full px-3 py-1.5 text-[11px] normal-case"><BookOpen size={14} strokeWidth={1.5} aria-hidden="true" />Field Manual</LabButton>
+        <LabButton primary className="rounded-full px-3 py-1.5 text-[11px] normal-case"><BookOpen size={14} strokeWidth={1.5} aria-hidden="true" />Field Manual</LabButton>
       </SheetTrigger>
       <SheetContent className="w-full overflow-y-auto px-5 py-8 text-left motion-reduce:animate-none motion-reduce:transition-none sm:max-w-xl sm:px-8">
         <header className="border-b-2 border-foreground pb-5">
