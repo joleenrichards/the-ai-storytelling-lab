@@ -4,6 +4,7 @@
 - [x] Add instant editorial copy checks and safe one-click mechanics fixes.
 - [x] Share selectable color grades across framing, post proof, and production exports; verify the workflow.
 - [x] Add current-campaign bookmarks, sample preview, and saved previous-campaign comparisons in the Post-Publish Field Log.
+- [x] Add goal-based metrics, low-sample guardrails, and a permanent testing-nuance note; verify saved metric readback.
 - [ ] Activate portfolio link — waiting for Joleen's portfolio URL.
 - [x] Add shared editable drafts, working-copy bars, and a platform-aware Editorial Proof; verify copying and session preservation.
 - [x] Add safely validated topic-aware SVG illustrations to the same hook request, with five keyword-matched fallbacks in production and post previews.

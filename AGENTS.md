@@ -42,4 +42,4 @@ use the editor.
 - Return topic illustrations in the existing hook inference response only; rebuild bounded XML through a strict primitive/attribute allowlist and render as isolated SVG images, with keyword-matched curated fallbacks for instant initial rendering and rejected art.
 - Keep copy checks and conservative mechanics fixes in pure TypeScript; no inference or storage is needed for real-time proofreading.
 - Keep selected color grade in workspace state, palette values in a pure module, and preview roles in CSS tokens; recolor only validated SVG and serialize the grade into production exports.
-- Keep field-log snapshots and CTR validation in plain TypeScript; read validated browser logs after hydration, save only explicit bookmarks/results, and isolate sample numbers from live results so previews never overwrite drafts.
+- Keep field-log snapshots, goal mappings, proportion validation, and sample guardrails in plain TypeScript; persist the selected metric with each log, default legacy logs to traffic, and isolate sample numbers from live results so previews never overwrite drafts.
