@@ -62,4 +62,31 @@ describe("shot format switching", () => {
     expect(output).toContain("Custom softbox");
     expect(output).not.toContain("Eye-Level Talking Head");
   });
+
+  it("exports the Feed / Series framing, four shots, and camera defaults", () => {
+    const preset = SHOT_PRESETS["1:1 Feed / Series"];
+    const output = productionSheet("1:1 Feed / Series", "Fresh perspective", preset.shots, preset.light, preset.lens, []);
+    expect(preset.shots).toHaveLength(4);
+    expect(output).toContain("PRODUCTION SHEET — 1:1 Feed / Series");
+    expect(output).toContain("1200 × 1200px (1:1) or 4:5 Lead • Cohesive contact-sheet grid");
+    expect(output).toContain("Hero Anchor Frame — Wide/environmental shot with clean subject separation");
+    expect(output).toContain("Process / Candid Action Shot — Human context for Tile 2");
+    expect(output).toContain("Tactile Detail or Data Proof Frame — Tight macro or clean graphic for Tile 3");
+    expect(output).toContain("Crop & Thumbnail Check — Verify framing holds up in 1:1 desktop & mobile grids");
+    expect(output).toContain("Match white balance and color grade across all frames so the multi-photo collage reads like a unified magazine contact sheet; keep text minimal.");
+  });
+
+  it("preserves Feed / Series checklist edits and custom camera notes across modes", () => {
+    renderShots();
+    fireEvent.click(screen.getByRole("button", { name: "1:1 Feed / Series" }));
+    expect(screen.getByRole("textbox", { name: "Lighting notes" })).toHaveValue(SHOT_PRESETS["1:1 Feed / Series"].light);
+    fireEvent.change(screen.getByRole("textbox", { name: "Hero Anchor Frame framing notes" }), { target: { value: "Office environmental portrait" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "Lighting notes" }), { target: { value: "Window key and bounce" } });
+    fireEvent.click(screen.getByRole("checkbox", { name: "Complete Hero Anchor Frame" }));
+    fireEvent.click(screen.getByRole("button", { name: "9:16 Reel" }));
+    expect(screen.getByRole("textbox", { name: "Lighting notes" })).toHaveValue("Window key and bounce");
+    fireEvent.click(screen.getByRole("button", { name: "1:1 Feed / Series" }));
+    expect(screen.getByRole("textbox", { name: "Hero Anchor Frame framing notes" })).toHaveValue("Office environmental portrait");
+    expect(screen.getByRole("checkbox", { name: "Complete Hero Anchor Frame" })).toBeChecked();
+  });
 });

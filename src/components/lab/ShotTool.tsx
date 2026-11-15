@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { Card, CopyBtn, Field, LabButton, Seg, ToolHead, input, label } from "./ui";
 import { FORMATS, SHOT_PRESETS, productionSheet, type Shot, type ShotFormat } from "./shots";
+import type { UtmFormat } from "./utm";
 const DEFAULT_PAL = [{ n: "Shadows", h: "#1F2B26" }, { n: "Mids", h: "#7A5A43" }, { n: "Highlights", h: "#F2E6D3" }, { n: "Accent", h: "#C85A32" }];
 
-export function ShotTool({ hook, onHookChange, onNext }: { hook: string; onHookChange: (hook: string) => void; onNext: (format: "reel" | "carousel") => void }) {
+export function ShotTool({ hook, onHookChange, onNext }: { hook: string; onHookChange: (hook: string) => void; onNext: (format: UtmFormat) => void }) {
   const [fmt, setFmt] = useState<ShotFormat>("9:16 Reel");
   const [shotsByFormat, setShotsByFormat] = useState<Record<ShotFormat, Shot[]>>(() => ({
     "9:16 Reel": SHOT_PRESETS["9:16 Reel"].shots.map((shot) => ({ ...shot })),
     "4:5 Carousel": SHOT_PRESETS["4:5 Carousel"].shots.map((shot) => ({ ...shot })),
+    "1:1 Feed / Series": SHOT_PRESETS["1:1 Feed / Series"].shots.map((shot) => ({ ...shot })),
   }));
   const shots = shotsByFormat[fmt];
   const setShots = (next: Shot[]) => setShotsByFormat((current) => ({ ...current, [fmt]: next }));
@@ -49,7 +51,7 @@ export function ShotTool({ hook, onHookChange, onNext }: { hook: string; onHookC
           </form>
         </Card>
         <div className="space-y-4">
-          <div className="mx-auto flex items-center justify-center border border-dashed border-terracotta bg-card font-mono text-xs text-terracotta" style={{ aspectRatio: fmt.startsWith("9") ? "9/16" : "4/5", maxHeight: 220 }}>{fmt.split(" ")[0]}</div>
+          <div className="mx-auto flex items-center justify-center border border-dashed border-terracotta bg-card font-mono text-xs text-terracotta" style={{ aspectRatio: fmt.split(" ")[0]?.replace(":", "/"), maxHeight: 220 }}>{fmt.split(" ")[0]}</div>
           <Card>
             <Field name="Lighting notes"><textarea rows={3} className={`${input} text-base`} value={light} onChange={(e) => setLight(e.target.value)} /></Field>
             <div className="mt-3"><Field name="Lens notes"><textarea rows={2} className={`${input} text-base`} value={lens} onChange={(e) => setLens(e.target.value)} /></Field></div>
@@ -73,7 +75,7 @@ export function ShotTool({ hook, onHookChange, onNext }: { hook: string; onHookC
       <div className="mt-4 flex flex-wrap gap-2">
         <CopyBtn primary text={sheet}>Copy Production Sheet</CopyBtn>
         <CopyBtn text={ai}>Copy as AI storyboard prompt</CopyBtn>
-        <LabButton primary onClick={() => onNext(fmt.startsWith("9") ? "reel" : "carousel")}>Move to UTM Builder →</LabButton>
+        <LabButton primary onClick={() => onNext(preset.content)}>Move to UTM Builder →</LabButton>
       </div>
     </div>
   );

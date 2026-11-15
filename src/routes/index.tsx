@@ -5,7 +5,7 @@ import { ABTool } from "@/components/lab/ABTool";
 import { UTMTool } from "@/components/lab/UTMTool";
 import { ShotTool } from "@/components/lab/ShotTool";
 import { Badge, LabButton } from "@/components/lab/ui";
-import { slug } from "@/components/lab/utm";
+import { slug, type UtmFormat } from "@/components/lab/utm";
 import { synthesize } from "@/components/lab/hooks";
 
 export const Route = createFileRoute("/")({
@@ -36,7 +36,7 @@ function Index() {
   const [topic, setTopic] = useState(SAMPLE_TOPIC);
   const [hook, setHook] = useState(synthesize(SAMPLE_TOPIC, "independent coffee roasters", "Editorial & Warm")[0]?.text ?? "");
   const [campaign, setCampaign] = useState("Spring Blend Launch 26");
-  const [format, setFormat] = useState<"reel" | "carousel" | "poll" | "story">("reel");
+  const [format, setFormat] = useState<UtmFormat>("reel");
   const [activeCampaign, setActiveCampaign] = useState("Spring Blend Launch 26");
   const panel = (id: string) => ({ id: `panel-${id}`, role: "tabpanel", "aria-labelledby": `tab-${id}`, hidden: tab !== id, tabIndex: 0 });
   return (

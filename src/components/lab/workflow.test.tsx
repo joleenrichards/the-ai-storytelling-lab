@@ -3,6 +3,21 @@ import { describe, expect, it } from "vitest";
 import { Route } from "@/routes/index";
 
 describe("creative campaign handoffs", () => {
+  it("passes Feed / Series to the tracking URL as photo-series", () => {
+    const Index = Route.options.component;
+    if (typeof Index !== "function") throw new Error("Missing workspace");
+    render(<Index />);
+    fireEvent.click(screen.getByRole("tab", { name: /Shot List/ }));
+    fireEvent.click(screen.getByRole("button", { name: "1:1 Feed / Series" }));
+    fireEvent.click(screen.getByRole("button", { name: "Move to UTM Builder →" }));
+    expect(screen.getByRole("button", { name: "photo-series", pressed: true })).toBeInTheDocument();
+    const trackingPanel = within(screen.getByRole("tabpanel"));
+    const url = trackingPanel.getByText(/https:.*utm_content=photo-series/).textContent;
+    if (!url) throw new Error("Missing tracking URL");
+    expect(new URL(url).searchParams.get("utm_content")).toBe("photo-series");
+    fireEvent.click(screen.getByRole("tab", { name: /Shot List/ }));
+    expect(screen.getByRole("button", { name: "1:1 Feed / Series", pressed: true })).toBeInTheDocument();
+  });
   it("sends the selected hook to production and preserves edited notes when revisiting", () => {
     const Index = Route.options.component;
     if (typeof Index !== "function") throw new Error("Missing workspace");
