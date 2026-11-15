@@ -3,6 +3,45 @@ import { describe, expect, it } from "vitest";
 import { Route } from "@/routes/index";
 
 describe("creative campaign handoffs", () => {
+  it.each([
+    ["9:16 Reel", "instagram", "reel"],
+    ["4:5 Carousel", "instagram", "carousel"],
+    ["1:1 Feed / Series", "linkedin", "photo-series"],
+  ])("overrides prior newsletter settings when arriving from %s", (shot, platform, format) => {
+    const Index = Route.options.component;
+    if (typeof Index !== "function") throw new Error("Missing workspace");
+    render(<Index />);
+    fireEvent.click(screen.getByRole("tab", { name: /UTM Builder/ }));
+    fireEvent.click(screen.getByRole("button", { name: "newsletter" }));
+    fireEvent.click(screen.getByRole("tab", { name: /Shot List/ }));
+    fireEvent.click(screen.getByRole("button", { name: shot }));
+    fireEvent.click(screen.getByRole("button", { name: "Move to UTM Builder →" }));
+    expect(screen.getByRole("button", { name: platform, pressed: true })).toBeInTheDocument();
+    const url = within(screen.getByRole("tabpanel")).getByText(/https:.*utm_content=/).textContent;
+    if (!url) throw new Error("Missing tracking URL");
+    expect(new URL(url).searchParams.get("utm_source")).toBe(platform);
+    expect(new URL(url).searchParams.get("utm_content")).toBe(format);
+    expect(new URL(url).searchParams.get("utm_medium")).toBe("organic-social");
+  });
+
+  it("switches invalid channel formats immediately and retains valid ones", () => {
+    const Index = Route.options.component;
+    if (typeof Index !== "function") throw new Error("Missing workspace");
+    render(<Index />);
+    fireEvent.click(screen.getByRole("tab", { name: /UTM Builder/ }));
+    fireEvent.click(screen.getByRole("button", { name: "facebook" }));
+    expect(screen.getByRole("button", { name: "reel", pressed: true })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "single-image" }));
+    fireEvent.click(screen.getByRole("button", { name: "linkedin" }));
+    expect(screen.getByRole("button", { name: "single-image", pressed: true })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "tiktok" }));
+    expect(screen.getByRole("button", { name: "video", pressed: true })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "newsletter" }));
+    const url = within(screen.getByRole("tabpanel")).getByText(/https:.*utm_content=/).textContent;
+    if (!url) throw new Error("Missing tracking URL");
+    expect(new URL(url).searchParams.get("utm_content")).toBe("header-cta");
+    expect(new URL(url).searchParams.get("utm_medium")).toBe("email");
+  });
   it("passes Feed / Series to the tracking URL as photo-series", () => {
     const Index = Route.options.component;
     if (typeof Index !== "function") throw new Error("Missing workspace");

@@ -5,7 +5,7 @@ import { ABTool } from "@/components/lab/ABTool";
 import { UTMTool } from "@/components/lab/UTMTool";
 import { ShotTool } from "@/components/lab/ShotTool";
 import { Badge, LabButton } from "@/components/lab/ui";
-import { slug, type UtmFormat } from "@/components/lab/utm";
+import { slug, shotTracking, type TrackingSelection } from "@/components/lab/utm";
 import { synthesize } from "@/components/lab/hooks";
 
 export const Route = createFileRoute("/")({
@@ -36,7 +36,7 @@ function Index() {
   const [topic, setTopic] = useState(SAMPLE_TOPIC);
   const [hook, setHook] = useState(synthesize(SAMPLE_TOPIC, "independent coffee roasters", "Editorial & Warm")[0]?.text ?? "");
   const [campaign, setCampaign] = useState("Spring Blend Launch 26");
-  const [format, setFormat] = useState<UtmFormat>("reel");
+  const [tracking, setTracking] = useState<TrackingSelection>({ platform: "instagram", format: "reel" });
   const [activeCampaign, setActiveCampaign] = useState("Spring Blend Launch 26");
   const panel = (id: string) => ({ id: `panel-${id}`, role: "tabpanel", "aria-labelledby": `tab-${id}`, hidden: tab !== id, tabIndex: 0 });
   return (
@@ -64,8 +64,8 @@ function Index() {
       </nav>
       <div className="pt-8 md:pt-10">
         <div {...panel("hooks")}><HookTool topic={topic} onTopicChange={setTopic} onSendHook={(text) => { setHook(text); setTab("shots"); }} /></div>
-        <div {...panel("shots")}><ShotTool hook={hook} onHookChange={setHook} onNext={(nextFormat) => { setCampaign(slug(topic) || "untitled-campaign"); setFormat(nextFormat); setTab("utm"); }} /></div>
-        <div {...panel("utm")}><UTMTool campaign={campaign} onCampaignChange={setCampaign} format={format} onFormatChange={setFormat} onNext={() => { setActiveCampaign(campaign); setTab("ab"); }} /></div>
+        <div {...panel("shots")}><ShotTool hook={hook} onHookChange={setHook} onNext={(nextFormat) => { setCampaign(slug(topic) || "untitled-campaign"); setTracking(shotTracking(nextFormat)); setTab("utm"); }} /></div>
+        <div {...panel("utm")}><UTMTool campaign={campaign} onCampaignChange={setCampaign} tracking={tracking} onTrackingChange={setTracking} onNext={() => { setActiveCampaign(campaign); setTab("ab"); }} /></div>
         <div {...panel("ab")}><ABTool campaign={activeCampaign} /></div>
       </div>
       <footer className="mt-12 border-t border-border pt-6 text-left">

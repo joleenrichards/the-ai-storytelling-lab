@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { buildUtm, UTM_FORMATS, type UtmFormat } from "./utm";
+import { buildUtm, PLATFORMS, PLATFORM_FORMATS, compatibleFormat, type TrackingSelection } from "./utm";
 import { Card, CopyBtn, Field, LabButton, Seg, ToolHead, input, label } from "./ui";
 
-const PLATFORMS = ["instagram", "linkedin", "tiktok", "newsletter"] as const;
-
-export function UTMTool({ campaign, onCampaignChange, format, onFormatChange, onNext }: { campaign: string; onCampaignChange: (campaign: string) => void; format: UtmFormat; onFormatChange: (format: UtmFormat) => void; onNext: () => void }) {
+export function UTMTool({ campaign, onCampaignChange, tracking, onTrackingChange, onNext }: { campaign: string; onCampaignChange: (campaign: string) => void; tracking: TrackingSelection; onTrackingChange: (tracking: TrackingSelection) => void; onNext: () => void }) {
   const [url, setUrl] = useState("https://fieldnotes.studio/spring-blend");
-  const [plat, setPlat] = useState<(typeof PLATFORMS)[number]>("instagram");
+  const { platform: plat } = tracking;
+  const format = compatibleFormat(plat, tracking.format);
+  const formats = PLATFORM_FORMATS[plat];
   const [log, setLog] = useState<{ t: string; u: string }[]>([]);
   const out = buildUtm(url, plat, campaign, format);
   return (
@@ -15,8 +15,8 @@ export function UTMTool({ campaign, onCampaignChange, format, onFormatChange, on
       <Card className="grid gap-5 md:grid-cols-2">
         <Field name="Destination URL"><input className={`${input} font-mono text-sm`} value={url} onChange={(e) => setUrl(e.target.value)} /></Field>
         <Field name="Campaign slug"><input className={input} value={campaign} onChange={(e) => onCampaignChange(e.target.value)} /></Field>
-        <div><div className={`${label} mb-2`}>Platform</div><Seg options={PLATFORMS} value={plat} onChange={setPlat} /></div>
-        <div><div className={`${label} mb-2`}>Content format</div><Seg options={UTM_FORMATS} value={format} onChange={onFormatChange} /></div>
+        <div><div className={`${label} mb-2`}>Platform</div><Seg options={PLATFORMS} value={plat} onChange={(platform) => onTrackingChange({ platform, format: compatibleFormat(platform, format) })} /></div>
+        <div><div className={`${label} mb-2`}>Content format</div><Seg options={formats} value={format} onChange={(nextFormat) => onTrackingChange({ platform: plat, format: nextFormat })} /></div>
       </Card>
       <Card className="mt-4 border-l-4 border-l-terracotta">
         <div className={label}>Generated URL</div>

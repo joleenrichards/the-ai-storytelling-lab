@@ -4,3 +4,4 @@
 - [ ] Activate portfolio link — waiting for Joleen's portfolio URL.
 - [x] Update Shot List mode presets, preserve custom edits, and verify current-mode production-sheet copying.
 - [x] Add Feed / Series shot presets and verify photo-series tracking handoff.
+- [x] Add channel-specific tracking formats, automatic mediums, and compatible production handoffs; verify copying and platform switches.
