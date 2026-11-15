@@ -9,7 +9,7 @@ const RELAY = [
   { no: "01", title: "Hook & Angle", icon: Compass, text: "Find your opening. Try a Prompt shuffles a fresh topic and audience; Generate Angles explores three ways in.", handoff: "Send Hook to Shot List →" },
   { no: "02", title: "Shot List", icon: Aperture, text: "Turn the chosen hook into a visual plan. Choose a format, refine your checklist, and carry the format forward.", handoff: "Move to UTM Builder →" },
   { no: "03", title: "UTM Builder", icon: Signpost, text: "Give the campaign a clean tracking link. Your selected content format becomes Variant A in the next test.", handoff: "Track in A/B Lab →" },
-  { no: "04", title: "A/B Lab", icon: FlaskConical, text: "Compare two formats, enter results, and read the lift and confidence alongside the editorial verdict.", handoff: null },
+  { no: "04", title: "Post-Publish Field Log", icon: FlaskConical, text: "Bookmark a draft for a 48h check-in, or compare past campaigns using impressions and link clicks.", handoff: null },
 ];
 
 const PRINCIPLES = [

@@ -1,4 +1,5 @@
 import type { UtmFormat } from "./utm";
+import { colorGradeBrief, type ColorGrade } from "./color-grade";
 
 export const FORMATS = ["9:16 Reel", "4:5 Carousel", "1:1 Feed / Series"] as const;
 export type ShotFormat = (typeof FORMATS)[number];
@@ -43,6 +44,6 @@ export const SHOT_PRESETS = {
   },
 } satisfies Record<ShotFormat, { content: UtmFormat; spec: string; shots: Shot[]; light: string; lens: string }>;
 
-export function productionSheet(format: ShotFormat, hook: string, shots: Shot[], light: string, lens: string, palette: { n: string; h: string }[]) {
-  return `PRODUCTION SHEET — ${format}\n\nFRAMING SPECS\n${SHOT_PRESETS[format].spec}\n\nACTIVE HOOK\n${hook}\n\nSHOT LIST\n${shots.map((s, i) => `${s.done ? "[x]" : "[ ]"} ${i + 1}. ${s.name}${s.note ? ` — ${s.note}` : ""}`).join("\n")}\n\nLIGHTING & CAMERA\n${light}\n\nLENS\n${lens}\n\nGRADE PALETTE\n${palette.map((p) => `${p.n}: ${p.h}`).join("\n")}`;
+export function productionSheet(format: ShotFormat, hook: string, shots: Shot[], light: string, lens: string, palette: { n: string; h: string }[], grade?: ColorGrade) {
+  return `PRODUCTION SHEET — ${format}\n\nFRAMING SPECS\n${SHOT_PRESETS[format].spec}\n\nACTIVE HOOK\n${hook}\n\nSHOT LIST\n${shots.map((s, i) => `${s.done ? "[x]" : "[ ]"} ${i + 1}. ${s.name}${s.note ? ` — ${s.note}` : ""}`).join("\n")}\n\nLIGHTING & CAMERA\n${light}\n\nLENS\n${lens}\n\nGRADE PALETTE\n${palette.map((p) => `${p.n}: ${p.h}`).join("\n")}${grade ? `\n\n${colorGradeBrief(grade)}` : ""}`;
 }

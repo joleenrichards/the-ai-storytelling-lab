@@ -4,9 +4,10 @@ import { FORMATS, SHOT_PRESETS, productionSheet, type Shot, type ShotFormat } fr
 import type { UtmFormat } from "./utm";
 import { FramePreview } from "./FramePreview";
 import { WorkingCopy } from "./WorkingCopy";
-const DEFAULT_PAL = [{ n: "Shadows", h: "#1F2B26" }, { n: "Mids", h: "#7A5A43" }, { n: "Highlights", h: "#F2E6D3" }, { n: "Accent", h: "#C85A32" }];
+import { COLOR_GRADES, DEFAULT_COLOR_GRADE, colorGradeBrief, type ColorGrade } from "./color-grade";
+import { ColorGradePicker } from "./ColorGradePicker";
 
-export function ShotTool({ hook, onHookChange, onNext, format, onFormatChange, shotNote, onShotNoteChange, topic = "Storytelling", illustration = null }: { hook: string; onHookChange: (hook: string) => void; onNext: (format: UtmFormat) => void; format?: ShotFormat; onFormatChange?: (format: ShotFormat) => void; shotNote?: string; onShotNoteChange?: (note: string) => void; topic?: string; illustration?: string | null }) {
+export function ShotTool({ hook, onHookChange, onNext, format, onFormatChange, shotNote, onShotNoteChange, topic = "Storytelling", illustration = null, selectedColorGrade, onColorGradeChange }: { hook: string; onHookChange: (hook: string) => void; onNext: (format: UtmFormat) => void; format?: ShotFormat; onFormatChange?: (format: ShotFormat) => void; shotNote?: string; onShotNoteChange?: (note: string) => void; topic?: string; illustration?: string | null; selectedColorGrade?: ColorGrade; onColorGradeChange?: (grade: ColorGrade) => void }) {
   const [localFormat, setLocalFormat] = useState<ShotFormat>("9:16 Reel");
   const fmt = format ?? localFormat;
   const setFmt = (next: ShotFormat) => { setLocalFormat(next); onFormatChange?.(next); };
@@ -23,10 +24,13 @@ export function ShotTool({ hook, onHookChange, onNext, format, onFormatChange, s
   const preset = SHOT_PRESETS[fmt];
   const light = shotNote ?? customLight ?? preset.light;
   const lens = customLens ?? preset.lens;
-  const [pal, setPal] = useState(DEFAULT_PAL);
+  const [localGrade, setLocalGrade] = useState<ColorGrade>(DEFAULT_COLOR_GRADE);
+  const grade = selectedColorGrade ?? localGrade;
+  const palette = COLOR_GRADES[grade];
+  const pal = [{ n: "Paper", h: palette.paper }, { n: "Primary Stroke", h: palette.primary }, { n: "Secondary", h: palette.secondary }];
 
-  const sheet = productionSheet(fmt, hook, shots, light, lens, pal);
-  const ai = `Create a ${shots.length}-frame storyboard for a ${fmt} social video/photo set. Aspect ratio ${fmt.split(" ")[0]}.\nFraming specs: ${preset.spec}\nNarrative hook: ${hook}\n${shots.map((s, i) => `Frame ${i + 1} (${s.name}): ${s.note}.`).join("\n")}\nLighting: ${light}\nLens: ${lens}\nColor grade palette: ${pal.map((p) => `${p.n.toLowerCase()} ${p.h}`).join(", ")}. Cinematic, natural texture, editorial mood.`;
+  const sheet = productionSheet(fmt, hook, shots, light, lens, pal, grade);
+  const ai = `Create a ${shots.length}-frame storyboard for a ${fmt} social video/photo set. Aspect ratio ${fmt.split(" ")[0]}.\nFraming specs: ${preset.spec}\nNarrative hook: ${hook}\n${shots.map((s, i) => `Frame ${i + 1} (${s.name}): ${s.note}.`).join("\n")}\nLighting: ${light}\nLens: ${lens}\n${colorGradeBrief(grade)}. Color grade palette: ${pal.map((p) => `${p.n.toLowerCase()} ${p.h}`).join(", ")}. Cinematic, natural texture, editorial mood.`;
 
   return (
     <div>
@@ -55,27 +59,14 @@ export function ShotTool({ hook, onHookChange, onNext, format, onFormatChange, s
           </form>
         </Card>
         <div className="space-y-4">
-          <FramePreview format={fmt} topic={topic} illustration={illustration} />
+          <FramePreview selectedColorGrade={grade} format={fmt} topic={topic} illustration={illustration} />
           <Card>
             <Field name="Lighting notes"><textarea rows={3} className={`${input} text-base`} value={light} onChange={(e) => { setLight(e.target.value); onShotNoteChange?.(e.target.value); }} /></Field>
             <div className="mt-3"><Field name="Lens notes"><textarea rows={2} className={`${input} text-base`} value={lens} onChange={(e) => setLens(e.target.value)} /></Field></div>
           </Card>
         </div>
       </div>
-      <Card className="mt-4">
-        <div className={label}>Color grading palette</div>
-        <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
-          {pal.map((p, i) => (
-            <div key={p.n} className="border border-border">
-              <label className="block h-20 cursor-pointer" style={{ background: p.h }}>
-                <input type="color" aria-label={`${p.n} color`} className="sr-only" value={/^#[0-9a-f]{6}$/i.test(p.h) ? p.h : "#000000"} onChange={(e) => setPal(pal.map((x, j) => j === i ? { ...x, h: e.target.value.toUpperCase() } : x))} />
-              </label>
-              <div className="p-2"><div className="text-sm">{p.n}</div>
-                <input aria-label={`${p.n} hex code`} className="w-full bg-transparent font-mono text-xs outline-none" value={p.h} onChange={(e) => setPal(pal.map((x, j) => j === i ? { ...x, h: e.target.value } : x))} /></div>
-            </div>
-          ))}
-        </div>
-      </Card>
+      <ColorGradePicker value={grade} onChange={(next) => { setLocalGrade(next); onColorGradeChange?.(next); }} />
       <div className="mt-4 flex flex-wrap gap-2">
         <CopyBtn primary text={sheet}>Copy Production Sheet</CopyBtn>
         <CopyBtn text={ai}>Copy as AI storyboard prompt</CopyBtn>

@@ -14,6 +14,7 @@ import { SAMPLE_HOOKS } from "@/components/lab/hooks";
 import { SAMPLE_FORMATS, comparisonHandoff, type ComparisonFormats } from "@/components/lab/comparison";
 import { FieldManual } from "@/components/lab/FieldManual";
 import { FieldPulse } from "@/components/lab/FieldPulse";
+import { DEFAULT_COLOR_GRADE, type ColorGrade } from "@/components/lab/color-grade";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -33,7 +34,7 @@ const TABS = [
   { id: "hooks", n: "01", name: "Hook & Angle", stage: "Planning", icon: Compass },
   { id: "shots", n: "02", name: "Shot List", stage: "Production", icon: Aperture },
   { id: "utm", n: "03", name: "UTM Builder", stage: "Execution", icon: Signpost },
-  { id: "ab", n: "04", name: "A/B Lab", stage: "Measurement", icon: FlaskConical },
+  { id: "ab", n: "04", name: "Field Log", stage: "Measurement", icon: FlaskConical },
 ];
 
 const SAMPLE_TOPIC = "Carousel posts get 3.1x more saves than single images";
@@ -43,13 +44,13 @@ function Index() {
   const [topic, setTopic] = useState(SAMPLE_TOPIC);
   const [activeCopy, setActiveCopy] = useState(SAMPLE_HOOKS[0]?.text ?? "");
   const [selectedAspectRatio, setSelectedAspectRatio] = useState<AspectRatio>("9:16");
+  const [selectedColorGrade, setSelectedColorGrade] = useState<ColorGrade>(DEFAULT_COLOR_GRADE);
   const [customShotNote, setCustomShotNote] = useState<string | null>(null);
   const [destinationUrl, setDestinationUrl] = useState("https://fieldnotes.studio/spring-blend");
   const [topicArt, setTopicArt] = useState<{ topic: string; svg: string | null }>({ topic: SAMPLE_TOPIC, svg: null });
   const illustration = topicArt.topic === topic ? topicArt.svg : null;
   const [campaign, setCampaign] = useState("Spring Blend Launch 26");
   const [tracking, setTracking] = useState<TrackingSelection>({ platform: "instagram", format: "reel" });
-  const [activeCampaign, setActiveCampaign] = useState("Spring Blend Launch 26");
   const [comparisonFormats, setComparisonFormats] = useState<ComparisonFormats>(SAMPLE_FORMATS);
   const shotFormat = ASPECT_FORMATS[selectedAspectRatio];
   const shotNote = customShotNote ?? SHOT_PRESETS[shotFormat].light;
@@ -80,9 +81,9 @@ function Index() {
       </nav>
       <div className="pt-8 md:pt-10">
         <div {...panel("hooks")}><HookTool activeCopy={activeCopy} topic={topic} onIllustrationChange={(svg, forTopic) => setTopicArt({ topic: forTopic, svg })} onTopicChange={setTopic} onActiveHookChange={setActiveCopy} onSendHook={(text) => { setActiveCopy(text); setTab("shots"); }} /></div>
-        <div {...panel("shots")}><ShotTool topic={topic} illustration={illustration} hook={activeCopy} onHookChange={setActiveCopy} format={shotFormat} onFormatChange={(format) => setSelectedAspectRatio(aspectForFormat(format))} shotNote={shotNote} onShotNoteChange={setCustomShotNote} onNext={(nextFormat) => { setCampaign(slug(topic) || "untitled-campaign"); setTracking(shotTracking(nextFormat)); setTab("utm"); }} /></div>
-        <div {...panel("utm")}><UTMTool topic={topic} illustration={illustration} activeCopy={activeCopy} onCopyChange={setActiveCopy} aspectRatio={selectedAspectRatio} shotNote={shotNote} destinationUrl={destinationUrl} onDestinationChange={setDestinationUrl} generatedUtmUrl={generatedUtmUrl} campaign={campaign} onCampaignChange={setCampaign} tracking={tracking} onTrackingChange={setTracking} onNext={(format) => { setActiveCampaign(campaign); setComparisonFormats(comparisonHandoff(format)); setTab("ab"); }} /></div>
-        <div {...panel("ab")}><ABTool campaign={activeCampaign} formats={comparisonFormats} onFormatsChange={setComparisonFormats} /></div>
+        <div {...panel("shots")}><ShotTool selectedColorGrade={selectedColorGrade} onColorGradeChange={setSelectedColorGrade} topic={topic} illustration={illustration} hook={activeCopy} onHookChange={setActiveCopy} format={shotFormat} onFormatChange={(format) => setSelectedAspectRatio(aspectForFormat(format))} shotNote={shotNote} onShotNoteChange={setCustomShotNote} onNext={(nextFormat) => { setCampaign(slug(topic) || "untitled-campaign"); setTracking(shotTracking(nextFormat)); setTab("utm"); }} /></div>
+        <div {...panel("utm")}><UTMTool selectedColorGrade={selectedColorGrade} topic={topic} illustration={illustration} activeCopy={activeCopy} onCopyChange={setActiveCopy} aspectRatio={selectedAspectRatio} shotNote={shotNote} destinationUrl={destinationUrl} onDestinationChange={setDestinationUrl} generatedUtmUrl={generatedUtmUrl} campaign={campaign} onCampaignChange={setCampaign} tracking={tracking} onTrackingChange={setTracking} onNext={(format) => { setComparisonFormats(comparisonHandoff(format)); setTab("ab"); }} /></div>
+        <div {...panel("ab")}><ABTool draft={{ copy: activeCopy, url: generatedUtmUrl, platform: tracking.platform, aspectRatio: selectedAspectRatio, shotNote, colorGrade: selectedColorGrade }} campaign={campaign} formats={comparisonFormats} onFormatsChange={setComparisonFormats} /></div>
       </div>
       <FieldPulse hook={activeCopy} />
       <footer className="border-t border-border pt-6 text-left">

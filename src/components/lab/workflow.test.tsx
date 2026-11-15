@@ -33,7 +33,7 @@ describe("creative campaign handoffs", () => {
     expect(screen.getByRole("combobox", { name: "Variant B format" })).toHaveValue(format === "single-image" ? "poll" : "single-image");
     fireEvent.change(screen.getByRole("combobox", { name: "Variant B format" }), { target: { value: "video" } });
     fireEvent.click(screen.getByRole("tab", { name: /UTM Builder/ }));
-    fireEvent.click(screen.getByRole("tab", { name: /A\/B Lab/ }));
+    fireEvent.click(screen.getByRole("tab", { name: /Field Log/ }));
     expect(screen.getByRole("combobox", { name: "Variant B format" })).toHaveValue("video");
   });
   it.each([

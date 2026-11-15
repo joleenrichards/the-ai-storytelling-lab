@@ -1,6 +1,9 @@
 - [x] Rename the masthead, stage navigation, and About section.
 - [x] Connect hook, shot plan, tracking campaign, and measurement while preserving session edits.
 - [x] Verify the full workflow and mobile layout; commit changes.
+- [x] Add instant editorial copy checks and safe one-click mechanics fixes.
+- [x] Share selectable color grades across framing, post proof, and production exports; verify the workflow.
+- [x] Add current-campaign bookmarks, sample preview, and saved previous-campaign comparisons in the Post-Publish Field Log.
 - [ ] Activate portfolio link — waiting for Joleen's portfolio URL.
 - [x] Add shared editable drafts, working-copy bars, and a platform-aware Editorial Proof; verify copying and session preservation.
 - [x] Add safely validated topic-aware SVG illustrations to the same hook request, with five keyword-matched fallbacks in production and post previews.

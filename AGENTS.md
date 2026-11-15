@@ -40,3 +40,6 @@ use the editor.
 - Keep active copy, aspect ratio, custom creative note, destination, and platform selection in workspace state; derive the tracked URL there so working-copy edits, production exports, proof, and footer sharing stay synchronized without storage or extra AI calls.
 - Keep Working Copy and Editorial Proof in focused presentation modules; pure aspect mappings and full-post serialization live in draft.ts so handoffs and clipboard output are testable.
 - Return topic illustrations in the existing hook inference response only; rebuild bounded XML through a strict primitive/attribute allowlist and render as isolated SVG images, with keyword-matched curated fallbacks for instant initial rendering and rejected art.
+- Keep copy checks and conservative mechanics fixes in pure TypeScript; no inference or storage is needed for real-time proofreading.
+- Keep selected color grade in workspace state, palette values in a pure module, and preview roles in CSS tokens; recolor only validated SVG and serialize the grade into production exports.
+- Keep field-log snapshots and CTR validation in plain TypeScript; read validated browser logs after hydration, save only explicit bookmarks/results, and isolate sample numbers from live results so previews never overwrite drafts.

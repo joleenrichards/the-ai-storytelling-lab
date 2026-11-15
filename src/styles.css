@@ -169,3 +169,24 @@
 @media (prefers-reduced-motion: reduce) {
   .frame-study, .rate-bar { transition: none; }
 }
+
+/* Scoped production-grade tokens; keep the surrounding publication unchanged. */
+[data-color-grade="warm"] {
+  --grade-paper: oklch(0.94519391 0.01721681 67.61739482);
+  --grade-primary: oklch(0.59867470 0.15062780 39.71613923);
+  --grade-secondary: oklch(0.26739752 0.01627857 58.86274748);
+}
+[data-color-grade="botanical"] {
+  --grade-paper: oklch(0.95877814 0.00749702 164.93718796);
+  --grade-primary: oklch(0.43652097 0.07010437 171.90393470);
+  --grade-secondary: oklch(0.59867470 0.15062780 39.71613923);
+}
+[data-color-grade="archival"] {
+  --grade-paper: oklch(0.95278689 0.00862183 84.57307789);
+  --grade-primary: oklch(0.22246644 0.00412059 84.58792497);
+  --grade-secondary: oklch(0.43652097 0.07010437 171.90393470);
+}
+ .grade-paper { background-color: var(--grade-paper); }
+.grade-primary { background-color: var(--grade-primary); }
+.grade-secondary { background-color: var(--grade-secondary); }
+.grade-crop { border-color: var(--grade-secondary); opacity: .6; }
