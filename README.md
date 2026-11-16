@@ -1,36 +1,39 @@
 # The AI Storytelling Lab
 
-Build a clean, editorial Social Media A/B Test Calculator web app styled like a literary data magazine:
+**An editorial creative workbench for turning raw campaign ideas into sharp social hooks, visual shot directions, and publication-ready post proofs.**
 
-Typography & Colors: Load EB Garamond from Google Fonts for all headings and body copy. Use Warm Alabaster (#F7F4EF) for the page background, crisp white (#FFFFFF) cards with subtle borders, Deep Forest Ink (#1A2B26) text, Botanical Green (#1F5E4D) for primary buttons and winning metrics, and Warm Terracotta (#C85A32) for secondary accents.
+*Designed and prompted by **Joleen Richards**, social media strategist and visual storyteller.*
 
-Features:
+---
 
-Two side-by-side input cards (Post A and Post B) with fields for Impressions / Reach and Total Engagements (pre-filled with realistic sample numbers so it works immediately on load).
+## Overview
 
-Automatic calculation of each post's Engagement Rate (%), the Relative Lift (%), and a two-proportion z-test Confidence Score (%).
+Most AI writing tools churn out generic, bloated copy with zero visual context. **The AI Storytelling Lab** approaches social strategy like an editorial newsroom—separating hook ideation, visual framing, and live post proofing into a focused, tactile workspace.
 
-A left-aligned Editorial Verdict box styled in soft sage (#E8F1EE) with a Botanical Green left border that translates the math into a clear, human recommendation on whether to declare a winner or keep testing.
+Built using an **Editorial Field Guide** design system (Warm Alabaster `#F7F4EF`, Botanical Green `#1F5E4D`, Terracotta `#C85A32`, paired with editorial serif typography and crisp `lucide-react` iconography), the lab prioritizes human editorial voice, zero-clutter layout, and reliable client-side performance.
 
-A quick "Reset / Clear" button and a toggle to switch the metric label between Engagements, Poll Votes, and Link Clicks.
+---
 
-This project was built with [Lovable](https://lovable.dev).
+## Core Workflow
 
-## Build with Lovable
+1. **Tab 01 — Angle & Hook Ideation:** Enter a campaign topic or raw note to generate distinct narrative angles, scroll-stopping hooks, and platform-aware drafts.
+2. **Tab 02 — Art Direction & Visual Framing:** Pair copy with structured shot lists, aspect ratio presets (`1:1`, `4:5`, `9:16`, `16:9`), and editorial color grades.
+3. **Tab 03 — Editorial Post Proof:** Preview the finished piece inside a distraction-free, publication-ready storyboard frame with dynamic visual cues and exportable copy.
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/b594126d-acaa-4453-b59e-5b537a886ec3).
+---
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+## Architecture & Design Decisions
 
-## Development
+* **Zero-Credit Client-Side State:** Visual framing, aspect-ratio switching, color grading, and post proofing run 100% client-side in React state—eliminating unnecessary API calls and ensuring instant responsiveness.
+* **Resilient Visual Framing:** Uses balanced `lucide-react` iconography inside hairline storyboard frames rather than unpredictable raw SVG generation, preventing aspect-ratio distortion across niche topics.
+* **Tech Stack:** React, TypeScript, Tailwind CSS, `lucide-react`, Vite.
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+---
 
-```sh
+## Local Development
+
+```bash
 git clone <this-repository-url>
 cd <repository-name>
-npm i
+npm install
 npm run dev
-```
