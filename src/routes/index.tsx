@@ -16,7 +16,6 @@ import { FieldManual } from "@/components/lab/FieldManual";
 import { FieldPulse } from "@/components/lab/FieldPulse";
 import { CAMPAIGN_KEY, restoreCampaign, starterCampaign, type Campaign } from "@/components/lab/campaign";
 import { WorkingCopy } from "@/components/lab/WorkingCopy";
-import { classifyVisual, nextVisualCategory, visualLabel, VISUAL_DRAWINGS } from "@/components/lab/visuals";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
@@ -45,6 +44,7 @@ function Index() {
   const [workspace, setWorkspace] = useState(starterCampaign);
   const [ready, setReady] = useState(false);
   const [resetKey, setResetKey] = useState(0);
+  const [topicArt, setTopicArt] = useState<{ topic: string; svg: string | null }>({ topic: "", svg: null });
   const [saveFailed, setSaveFailed] = useState(false);
   useEffect(() => {
     try { setWorkspace(restoreCampaign(localStorage.getItem(CAMPAIGN_KEY))); }
@@ -74,17 +74,11 @@ function Index() {
   const setSelectedColorGrade = (value: Campaign["selectedColorGrade"]) => update("selectedColorGrade", value);
   const setCustomShotNote = (value: string) => update("shotNote", value);
   function newCampaign() {
-    setWorkspace(starterCampaign());
+    setWorkspace(starterCampaign()); setTopicArt({ topic: "", svg: null });
     setResetKey((value) => value + 1); setTab("hooks");
     toast.success("New campaign — a fresh field guide is ready.");
   }
-  const currentVisual = workspace.visual?.topic === topic ? workspace.visual : null;
-  const illustration = currentVisual?.svg ?? VISUAL_DRAWINGS[currentVisual?.category ?? classifyVisual(topic)];
-  const sketchLabel = currentVisual?.label ?? visualLabel(classifyVisual(topic));
-  const swapSketch = () => setWorkspace((current) => {
-    const category = nextVisualCategory(current.visual?.topic === current.topic ? current.visual.category : classifyVisual(current.topic));
-    return { ...current, visual: { topic: current.topic, category, label: visualLabel(category), svg: VISUAL_DRAWINGS[category] } };
-  });
+  const illustration = topicArt.topic === topic ? topicArt.svg : null;
   const shotFormat = selectedShotFormat;
   const shotNote = customShotNote ?? SHOT_PRESETS[shotFormat].light;
   const generatedUtmUrl = buildUtm(destinationUrl, tracking.platform, campaign, tracking.format);
@@ -115,9 +109,9 @@ function Index() {
       <div className="pt-8 md:pt-10" key={resetKey}>
         <WorkingCopy copy={activeCopy} onChange={setActiveCopy} onNewCampaign={newCampaign} />
         {saveFailed && <p role="status" className="mb-4 font-mono text-xs text-terracotta">This browser cannot save your draft. Keep this tab open to preserve your work.</p>}
-        <div {...panel("hooks")}><HookTool selectedTone={workspace.selectedTone} onToneChange={(value) => update("selectedTone", value)} audience={workspace.audience} onAudienceChange={(value) => update("audience", value)} activeCopy={activeCopy} topic={topic} onVisualChange={(category, name, svg, forTopic) => update("visual", { topic: forTopic, category: category ?? classifyVisual(forTopic), label: name ?? visualLabel(category ?? classifyVisual(forTopic)), svg })} onTopicChange={setTopic} onActiveHookChange={setActiveCopy} onSendHook={(text) => { setActiveCopy(text); setTab("shots"); }} /></div>
+        <div {...panel("hooks")}><HookTool selectedTone={workspace.selectedTone} onToneChange={(value) => update("selectedTone", value)} audience={workspace.audience} onAudienceChange={(value) => update("audience", value)} activeCopy={activeCopy} topic={topic} onIllustrationChange={(svg, forTopic) => setTopicArt({ topic: forTopic, svg })} onTopicChange={setTopic} onActiveHookChange={setActiveCopy} onSendHook={(text) => { setActiveCopy(text); setTab("shots"); }} /></div>
         <div {...panel("shots")}><ShotTool selectedColorGrade={selectedColorGrade} onColorGradeChange={setSelectedColorGrade} topic={topic} illustration={illustration} hook={activeCopy} onHookChange={setActiveCopy} format={shotFormat} onFormatChange={(format) => { setWorkspace((current) => ({ ...current, selectedFormat: format, selectedAspectRatio: aspectForFormat(format) })); }} shotNote={shotNote} onShotNoteChange={setCustomShotNote} onNext={(nextFormat) => { setCampaign(slug(topic) || "untitled-campaign"); setTracking(shotTracking(nextFormat)); setTab("utm"); }} /></div>
-        <div {...panel("utm")}><UTMTool visualLabel={sketchLabel} onSwapSketch={swapSketch} selectedFormat={shotFormat} pollOptions={pollOptions} onPollOptionsChange={setPollOptions} selectedColorGrade={selectedColorGrade} topic={topic} illustration={illustration} activeCopy={activeCopy} onCopyChange={setActiveCopy} aspectRatio={selectedAspectRatio} shotNote={shotNote} destinationUrl={destinationUrl} onDestinationChange={setDestinationUrl} generatedUtmUrl={generatedUtmUrl} campaign={campaign} onCampaignChange={setCampaign} tracking={tracking} onTrackingChange={setTracking} onNext={(format) => { setComparisonFormats(comparisonHandoff(format)); setTab("ab"); }} /></div>
+        <div {...panel("utm")}><UTMTool selectedFormat={shotFormat} pollOptions={pollOptions} onPollOptionsChange={setPollOptions} selectedColorGrade={selectedColorGrade} topic={topic} illustration={illustration} activeCopy={activeCopy} onCopyChange={setActiveCopy} aspectRatio={selectedAspectRatio} shotNote={shotNote} destinationUrl={destinationUrl} onDestinationChange={setDestinationUrl} generatedUtmUrl={generatedUtmUrl} campaign={campaign} onCampaignChange={setCampaign} tracking={tracking} onTrackingChange={setTracking} onNext={(format) => { setComparisonFormats(comparisonHandoff(format)); setTab("ab"); }} /></div>
         <div {...panel("ab")}><ABTool draft={{ copy: activeCopy, url: generatedUtmUrl, platform: tracking.platform, aspectRatio: selectedAspectRatio, shotNote, colorGrade: selectedColorGrade }} campaign={campaign} formats={comparisonFormats} onFormatsChange={setComparisonFormats} /></div>
       </div>
       <FieldPulse hook={activeCopy} />

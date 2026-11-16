@@ -3,10 +3,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { Dices, Sparkles, Pencil, Check } from "lucide-react";
 import { generateHookAngles } from "@/lib/hooks.functions";
 import { TONES, SAMPLE_HOOKS, synthesize, buildPrompt, nextPromptScenario, type Tone } from "./hooks";
-import type { VisualCategory } from "./visuals";
 import { Card, CopyBtn, Field, LabButton, Seg, ToolHead, input, label } from "./ui";
 
-export function HookTool({ topic, onTopicChange, onSendHook, onActiveHookChange, activeCopy, onIllustrationChange, onVisualChange, selectedTone, onToneChange, audience, onAudienceChange }: { onVisualChange?: (category: VisualCategory | undefined, label: string | undefined, svg: string | null, topic: string) => void; selectedTone?: Tone; onToneChange?: (tone: Tone) => void; audience?: string; onAudienceChange?: (audience: string) => void; topic: string; onTopicChange: (topic: string) => void; onSendHook: (hook: string) => void; onActiveHookChange?: (hook: string) => void; activeCopy?: string; onIllustrationChange?: (svg: string | null, topic: string) => void }) {
+export function HookTool({ topic, onTopicChange, onSendHook, onActiveHookChange, activeCopy, onIllustrationChange, selectedTone, onToneChange, audience, onAudienceChange }: { selectedTone?: Tone; onToneChange?: (tone: Tone) => void; audience?: string; onAudienceChange?: (audience: string) => void; topic: string; onTopicChange: (topic: string) => void; onSendHook: (hook: string) => void; onActiveHookChange?: (hook: string) => void; activeCopy?: string; onIllustrationChange?: (svg: string | null, topic: string) => void }) {
   const [editing, setEditing] = useState<string | null>(null);
   const [activeType, setActiveType] = useState<string>(SAMPLE_HOOKS[0]?.type ?? "Curiosity Gap");
   const [localAud, setLocalAud] = useState("independent coffee roasters");
@@ -36,7 +35,6 @@ export function HookTool({ topic, onTopicChange, onSendHook, onActiveHookChange,
       const result = await generateAngles({ data: { topic: nextTopic, audience: nextAudience, voice: tone, previousHooks: history.current } });
       if (!mounted.current) return;
       onIllustrationChange?.(result.illustration ?? null, nextTopic);
-      onVisualChange?.(result.visualCategory, result.visualLabel, result.illustration ?? null, nextTopic);
       nextHooks = result.angles ?? synthesize(nextTopic, nextAudience, tone, variation);
     } catch {
       nextHooks = synthesize(nextTopic, nextAudience, tone, variation);

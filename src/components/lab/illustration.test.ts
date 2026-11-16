@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { fallbackDrawing, FALLBACK_DRAWINGS, sanitizeIllustration } from "./illustration";
 
 describe("safe editorial illustrations", () => {
-  it.each([["Coffee roasters", "coffee"], ["Campaign growth", "compass"], ["Storytelling notebook", "notebook"], ["Handmade botanical craft", "leaf"], ["Studio ideas", "lamp"]] as const)("matches %s without an AI request", (topic, drawing) => {
+  it.each([["Coffee roasters", "coffee"], ["Campaign growth", "compass"], ["Storytelling notebook", "notebook"], ["Handmade ceramics", "leaf"], ["Studio ideas", "lamp"]] as const)("matches %s without an AI request", (topic, drawing) => {
     expect(fallbackDrawing(topic)).toBe(FALLBACK_DRAWINGS[drawing]);
     expect(sanitizeIllustration(FALLBACK_DRAWINGS[drawing])).not.toBeNull();
   });

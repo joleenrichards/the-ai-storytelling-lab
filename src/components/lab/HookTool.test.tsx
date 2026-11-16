@@ -51,11 +51,3 @@ describe("click-only hook generation", () => {
     expect(screen.queryByText(first ?? "missing")).not.toBeInTheDocument();
   });
 });
-it("hands visual classification through the same single generation response", async () => {
-  const onVisualChange = vi.fn();
-  generate.mockResolvedValue({ angles: synthesize("Pets", "Pet owners", "Editorial & Warm", 0), visualCategory: "pets", visualLabel: "Editorial Sketch: Botanical Pet Portrait", illustration: null });
-  render(<HookTool {...props} onVisualChange={onVisualChange} />);
-  fireEvent.click(screen.getByRole("button", { name: "Generate Angles" }));
-  await waitFor(() => expect(onVisualChange).toHaveBeenCalledWith("pets", "Editorial Sketch: Botanical Pet Portrait", null, props.topic));
-  expect(generate).toHaveBeenCalledTimes(1);
-});
