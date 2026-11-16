@@ -1,6 +1,6 @@
 import { Copy, Globe, Heart, MessageCircle, MoreHorizontal, ThumbsUp, Bookmark, Send } from "lucide-react";
 import { toast } from "sonner";
-import { TopicIllustration } from "./TopicIllustration";
+import { EditorialVisualFrame } from "./EditorialVisualFrame";
 import { fullPost, proofMedia, type AspectRatio } from "./draft";
 import type { UtmPlatform } from "./utm";
 import { LabButton, label } from "./ui";
@@ -13,7 +13,7 @@ import { postCount } from "./post-limits";
 const PLATFORM_NAMES: Record<UtmPlatform, string> = { linkedin: "LinkedIn", facebook: "Facebook", instagram: "Instagram", tiktok: "TikTok", newsletter: "Newsletter", x: "X", bluesky: "Bluesky" };
 const RATIOS: Record<AspectRatio, string> = { "9:16": "aspect-[9/16]", "4:5": "aspect-[4/5]", "1:1": "aspect-square" };
 
-export function PostProof({ copy, url, platform, aspectRatio: fallbackRatio, format, shotNote, topic, illustration = null, onCopyChange, selectedColorGrade, pollOptions, onPollOptionsChange }: { copy: string; url: string; platform: UtmPlatform; aspectRatio: AspectRatio; format?: string; shotNote: string; topic: string; illustration?: string | null; onCopyChange: (copy: string) => void; selectedColorGrade?: ColorGrade | undefined; pollOptions?: string[]; onPollOptionsChange?: (options: string[]) => void }) {
+export function PostProof({ copy, url, platform, aspectRatio: fallbackRatio, format, shotNote, topic, onCopyChange, selectedColorGrade, pollOptions, onPollOptionsChange }: { copy: string; url: string; platform: UtmPlatform; aspectRatio: AspectRatio; format?: string; shotNote: string; topic: string; illustration?: string | null; onCopyChange: (copy: string) => void; selectedColorGrade?: ColorGrade | undefined; pollOptions?: string[]; onPollOptionsChange?: (options: string[]) => void }) {
   const [localOptions, setLocalOptions] = useState(DEFAULT_POLL_OPTIONS);
   const { poll: pollSelected, aspectRatio } = proofMedia(format ?? fallbackRatio);
   const microblog = platform === "x" || platform === "bluesky";
@@ -30,8 +30,7 @@ export function PostProof({ copy, url, platform, aspectRatio: fallbackRatio, for
       <header className="flex items-center gap-3 border-b border-border p-4"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sage font-serif text-xl text-primary">fn</span><div className="min-w-0 flex-1"><p className="text-base font-semibold">{captionFirst ? "Field Notes Studio" : "fieldnotes.studio"}</p><p className="flex items-center gap-1 font-mono text-[10px] text-muted-foreground">{microblog ? (platform === "bluesky" ? "@fieldnotes.studio · Just now" : "@fieldnotes · Just now") : platform === "newsletter" ? "From the studio · Newsletter" : captionFirst ? "Just now ·" : "Original story"}{captionFirst && !microblog && platform !== "newsletter" && <Globe size={10} />}</p></div><MoreHorizontal size={18} className="text-muted-foreground" aria-hidden="true" /></header>
       {captionFirst && caption}
       {pollSelected && platform === "bluesky" ? <p role="note" className="px-5 py-4 text-base text-muted-foreground">Note: Bluesky doesn't support native polls — previewing as a discussion prompt</p> : pollSelected ? <PollPreview options={pollOptions ?? localOptions} onChange={onPollOptionsChange ?? setLocalOptions} {...(selectedColorGrade ? { selectedColorGrade } : {})} /> : <figure aria-label={`Creative frame ${aspectRatio}`} className={`relative isolate mx-auto flex items-center justify-center overflow-hidden ${RATIOS[aspectRatio]} ${aspectRatio === "9:16" ? "h-[420px] max-h-[420px] max-w-full" : "w-full"} ${!captionFirst ? "rounded-sm" : ""}`}>
-        <div className="absolute inset-0"><TopicIllustration selectedColorGrade={selectedColorGrade} topic={topic} illustration={illustration} /></div>
-        <span className="absolute bottom-6 left-6 font-mono text-[10px] uppercase text-terracotta">Creative frame · {aspectRatio}</span>
+        <EditorialVisualFrame selectedColorGrade={selectedColorGrade} topic={topic} copy={copy} aspectRatio={aspectRatio} />
       </figure>}
       {blueskyCard && <a href={url} target="_blank" rel="noopener noreferrer" aria-label="Bluesky link preview" className="mx-5 mb-4 block overflow-hidden rounded-sm border border-border bg-background px-4 py-3 text-foreground"><p className="font-mono text-[10px] text-muted-foreground">{linkHost}</p><p className="mt-1 text-lg">{topic || "Field Notes"}</p><p className="mt-1 break-all font-mono text-xs text-primary">{url}</p></a>}
       <div className="border-y border-border bg-background px-5 py-3"><span className={label}>Creative direction</span><p className="mt-1 whitespace-pre-wrap break-words text-base italic text-muted-foreground">{shotNote || "—"}</p></div>

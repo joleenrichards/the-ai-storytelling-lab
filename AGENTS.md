@@ -40,6 +40,7 @@ use the editor.
 - Keep active copy, tone, format, grade, custom creative note, destination, and platform selection in validated workspace state; derive the tracked URL there so autosaved drafts, exports, proof, and sharing stay synchronized without extra AI calls.
 - Keep platform character counting in pure TypeScript: twitter-text for X, grapheme counting for Bluesky, and explicit link-card exclusion; this keeps counters aligned with rendered attachments.
 - Keep Working Copy and Editorial Proof in focused presentation modules; pure aspect mappings and full-post serialization live in draft.ts so handoffs and clipboard output are testable.
+- Editorial Proof uses standard Lucide icons selected by a pure topic-first/copy-fallback keyword mapper; its focused visual frame inherits color-grade tokens to avoid distorted custom art without inference.
 - Return topic illustrations in the existing hook inference response only; rebuild bounded XML through a strict primitive/attribute allowlist and render as isolated SVG images, with keyword-matched curated fallbacks for instant initial rendering and rejected art.
 - Keep copy checks and conservative mechanics fixes in pure TypeScript; no inference or storage is needed for real-time proofreading.
 - Keep selected color grade in workspace state, palette values in a pure module, and preview roles in CSS tokens; recolor only validated SVG and serialize the grade into production exports.
